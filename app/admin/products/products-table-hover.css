@@ -1,0 +1,5 @@
+.pro-table-row-hover:hover {
+  box-shadow: 0 2px 12px #b3c6ff;
+  background: #f0f7ff !important;
+  transition: box-shadow 0.2s, background 0.2s;
+}

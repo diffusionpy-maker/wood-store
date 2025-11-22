@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  manager
+  viewer
+}
+
+enum OrderStatus {
+  pending
+  paid
+  shipped
+  canceled
+}
+
+enum PaymentProvider {
+  ecpay
+  linepay
+}
+
+enum PaymentStatus {
+  requested
+  reserved
+  confirmed
+  failed
+  refunded
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  name          String?
+  role          UserRole  @default(admin)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  orders        Order[]
+}
+
+model Account {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?   @db.LongText
+  access_token      String?   @db.LongText
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?   @db.LongText
+  session_state     String?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  price       Decimal   @db.Decimal(10, 2)
+  description String?
+  image       String?
+  isActive    Boolean   @default(true)
+  categoryId  Int
+  stock       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  category    Category  @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id             Int           @id @default(autoincrement())
+  orderNumber    String        @unique
+  userId         Int
+  customerName   String
+  customerEmail  String
+  customerPhone  String?
+  totalPrice     Decimal       @db.Decimal(10, 2)
+  status         OrderStatus   @default(pending)
+  paymentStatus  PaymentStatus @default(requested)
+  paymentProvider PaymentProvider?
+  paymentLogs    PaymentLog[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          OrderItem[]
+  user           User          @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model PaymentLog {
+  id           Int             @id @default(autoincrement())
+  orderId      Int
+  provider     PaymentProvider
+  status       PaymentStatus
+  rawRequest   Json
+  rawResponse  Json?
+  message      String?
+  createdAt    DateTime         @default(now())
+  order        Order            @relation(fields: [orderId], references: [id])
+}
