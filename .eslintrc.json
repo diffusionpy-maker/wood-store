@@ -1,6 +1,18 @@
 {
   "extends": ["next", "next/core-web-vitals"],
   "rules": {
-    "@next/next/no-html-link-for-pages": "off"
+     "@next/next/no-html-link-for-pages": "error", // 禁止直接用 <a> 跳頁，請用 <Link> 元件
+     "@next/next/no-img-element": "error", // 禁止直接用 <img>，請用 Next.js <Image> 元件
+     "@next/next/no-document-import-in-page": "error", // 禁止在頁面元件中 import _document
+     "@next/next/no-head-import-in-document": "error", // 禁止在 _document 中 import <Head>
+     "@next/next/no-sync-scripts": "error", // 禁止同步 script，提升效能
+     "no-unused-vars": "error", // 禁止未使用的變數
+     "no-console": "warn", // 控制台訊息僅限除錯
+     "eqeqeq": "error", // 強制使用全等 ===
+     "no-undef": "error", // 禁止使用未宣告的變數
+     "curly": "error", // 強制所有控制語句使用大括號
+     "semi": ["error", "always"], // 每行結尾加分號
+     "quotes": ["error", "single"], // 統一使用單引號
+     "indent": ["error", 2] // 統一縮排 2 空格
   }
 }

@@ -1,0 +1,12 @@
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[lineId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "avatar" TEXT,
+ADD COLUMN     "lineId" TEXT;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_lineId_key" ON "User"("lineId");
