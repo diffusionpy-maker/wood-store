@@ -18,9 +18,7 @@ import {
   Card,
   Upload,
 } from 'antd';
-import ProCard from '@ant-design/pro-card';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
-import ProSkeleton from '@ant-design/pro-skeleton';
+import { Table, Skeleton } from 'antd';
 import { useState, useRef } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import {
@@ -63,7 +61,7 @@ export default function OrdersPage() {
   const [fileList, setFileList] = useState<any[]>([]);
   const actionRef = useRef();
 
-  const columns: ProColumns<any>[] = [
+  const columns = [
     {
       title: '訂單編號',
       dataIndex: 'orderNumber',
@@ -121,8 +119,6 @@ export default function OrdersPage() {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 150,
-      search: true,
-      valueType: 'dateRange',
       sorter: true,
       render: (_dom: any, entity: any) => entity.createdAt,
     },
@@ -130,8 +126,7 @@ export default function OrdersPage() {
       title: '操作',
       key: 'action',
       width: 100,
-      fixed: 'right',
-      valueType: 'option',
+      fixed: 'right' as const,
       render: (_: unknown, record: any) => (
         <Button type="link" size="small" onClick={() => onDetail(record)}>
           詳情
@@ -181,22 +176,17 @@ export default function OrdersPage() {
     : { total: 0, pending: 0, paid: 0, shipped: 0, delivered: 0 };
 
   return (
-    <ProCard
-      ghost
-      direction="column"
-      gutter={[16, 16]}
-      style={{ minHeight: '100vh', background: '#f5f5f5' }}
-    >
-      <ProCard ghost>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: 16 }}>
+      <Card style={{ marginBottom: 16 }}>
         <Title level={3} style={{ color: '#1677ff', fontWeight: 700, marginBottom: 8 }}>
           訂單管理
         </Title>
         <span style={{ color: '#888' }}>管理訂單資訊，支援詳情、狀態修改、多維度統計</span>
-      </ProCard>
+      </Card>
 
       {/* 骨架屏 loading 效果 */}
       {isLoading ? (
-        <ProSkeleton type="list" active />
+        <Skeleton active paragraph={{ rows: 8 }} />
       ) : (
         <>
           {/* 統計卡片（Ant Design Card，variant="outlined"） */}
@@ -283,27 +273,17 @@ export default function OrdersPage() {
           <Divider style={{ margin: '8px 0 16px 0' }} />
 
           {/* 表格 */}
-          <ProCard
-            bordered
-            style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 12px #e6e6e6' }}
-          >
-            <ProTable
+          <Card style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 12px #e6e6e6' }}>
+            <Table
               rowKey="id"
               columns={columns}
               dataSource={data}
               loading={isLoading}
               pagination={{ pageSize: 10 }}
-              search={{
-                labelWidth: 'auto',
-              }}
-              actionRef={actionRef}
-              options={{
-                setting: false,
-              }}
-              tableStyle={{ borderRadius: 12, overflow: 'hidden' }}
-              rowClassName={() => 'pro-table-row-hover'}
+              style={{ borderRadius: 12, overflow: 'hidden' }}
+              className="pro-table-row-hover"
             />
-          </ProCard>
+          </Card>
 
           {/* 詳情 Modal */}
           <Modal
@@ -345,7 +325,7 @@ export default function OrdersPage() {
             {selected && (
               <div style={{ paddingTop: 16 }}>
                 {/* 基本信息 */}
-                <Descriptions column={2} bordered size="small" style={{ marginBottom: 24 }}>
+                <Descriptions column={2} size="small" style={{ marginBottom: 24 }}>
                   <Descriptions.Item label="訂單編號">{selected.orderNumber}</Descriptions.Item>
                   <Descriptions.Item label="狀態">
                     <Tag color={statusColorMap[selected.status] || 'default'}>
@@ -482,6 +462,6 @@ export default function OrdersPage() {
           </Modal>
         </>
       )}
-    </ProCard>
+    </div>
   );
 }

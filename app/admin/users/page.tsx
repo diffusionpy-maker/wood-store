@@ -1,12 +1,10 @@
 'use client';
-import { Card, Table, Avatar, Tag, Upload, Modal, Button, DatePicker } from 'antd';
-import update from 'immutability-helper';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import dayjs from 'dayjs';
-import React, { useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import Image from 'next/image';
+import { Avatar, Tag, Button, Space, Modal, Form, Input, Select, message } from 'antd';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { PlusOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import PageContainer from '../components/PageContainer';
+
 const initialUsers = [
   {
     key: 1,
@@ -15,6 +13,7 @@ const initialUsers = [
     role: '管理員',
     status: '啟用',
     createdAt: '2025-11-01',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
   },
   {
     key: 2,
@@ -23,6 +22,7 @@ const initialUsers = [
     role: '操作員',
     status: '啟用',
     createdAt: '2025-11-10',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=2',
   },
   {
     key: 3,
@@ -31,6 +31,7 @@ const initialUsers = [
     role: '審核員',
     status: '停用',
     createdAt: '2025-10-25',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=3',
   },
   {
     key: 4,
@@ -39,197 +40,190 @@ const initialUsers = [
     role: '管理員',
     status: '啟用',
     createdAt: '2025-11-15',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=4',
   },
 ];
-const columns: any[] = [
-  {
-    title: '姓名',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text: string) => (
-      <Avatar style={{ backgroundColor: '#1890ff', marginRight: 8 }}>{text[0]}</Avatar>
-    ),
-  },
-  { title: 'Email', dataIndex: 'email', key: 'email' },
-  { title: '角色', dataIndex: 'role', key: 'role' },
-  {
-    title: '狀態',
-    dataIndex: 'status',
-    key: 'status',
-    render: (status: string) => <Tag color={status === '啟用' ? 'green' : 'red'}>{status}</Tag>,
-  },
-  {
-    title: '建立時間',
-    dataIndex: 'createdAt',
-    key: 'createdAt',
-    render: (createdAt: string) => (createdAt ? dayjs(createdAt).format('YYYY-MM-DD') : ''),
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }: {
-      setSelectedKeys: (keys: any) => void;
-      selectedKeys: any;
-      confirm: () => void;
-      clearFilters: () => void;
-    }) => (
-      <div style={{ padding: 8 }}>
-        <DatePicker.RangePicker
-          onChange={(dates) => {
-            setSelectedKeys(dates ? [dates] : []);
-          }}
-          style={{ width: 200, marginBottom: 8, display: 'block' }}
-        />
-        <Button type="primary" onClick={confirm} size="small" style={{ width: 90, marginRight: 8 }}>
-          篩選
-        </Button>
-        <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
-          重設
-        </Button>
-      </div>
-    ),
-    onFilter: (value: any, record: any) => {
-      if (!value || !record.createdAt) return true;
-      const [start, end] = value;
-      const date = dayjs(record.createdAt);
-      return date.isAfter(start) && date.isBefore(end);
-    },
-  },
-];
+
 export default function UsersPage() {
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [form] = Form.useForm();
   const [users, setUsers] = useState(initialUsers);
 
-  const handleUploadChange = ({ fileList: newFileList }: any) => {
-    setFileList(newFileList);
-  };
-  const handlePreview = async (file: any) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result as string);
-      });
-    }
-    setPreviewImage(src);
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || '預覽');
-  };
-  const handleCancel = () => setPreviewOpen(false);
-
-  // 拖曳排序 row 元件
-  const type = 'DraggableBodyRow';
-  const DraggableBodyRow = ({
-    index,
-    className,
-    style,
-    ...restProps
-  }: {
-    index: number;
-    className?: string;
-    style?: React.CSSProperties;
-    [key: string]: any;
-  }) => {
-    const ref = React.useRef<HTMLTableRowElement>(null);
-    const [{ isOver, dropClassName }, drop] = useDrop({
-      accept: type,
-      collect: (monitor: any) => {
-        const { index: dragIndex } = monitor.getItem() || {};
-        return {
-          isOver: monitor.isOver(),
-          dropClassName:
-            dragIndex === index
-              ? ' drop-over-downward'
-              : dragIndex < index
-                ? ' drop-over-upward'
-                : '',
-        };
+  const columns: ProColumns<any>[] = [
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string, entity: any) => (
+        <Space>
+          <Avatar src={entity.avatar} icon={<UserOutlined />} />
+          <span className="font-medium">{text}</span>
+        </Space>
+      ),
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+      copyable: true,
+    },
+    {
+      title: '角色',
+      dataIndex: 'role',
+      key: 'role',
+      valueType: 'select',
+      valueEnum: {
+        管理員: { text: '管理員', status: 'Success' },
+        操作員: { text: '操作員', status: 'Processing' },
+        審核員: { text: '審核員', status: 'Warning' },
       },
-      drop: (item: any) => {
-        moveRow(item.index, index);
+    },
+    {
+      title: '狀態',
+      dataIndex: 'status',
+      key: 'status',
+      valueType: 'select',
+      valueEnum: {
+        啟用: { text: '啟用', status: 'Success' },
+        停用: { text: '停用', status: 'Error' },
       },
-    });
-    const [, drag] = useDrag({
-      type,
-      item: { index },
-    });
-    drop(drag(ref));
-    return (
-      <tr
-        ref={ref}
-        className={`${className || ''}${isOver ? dropClassName : ''}`}
-        style={{ cursor: 'move', ...style }}
-        {...restProps}
-      />
-    );
-  };
+      render: (text: any, entity: any) => (
+        <Tag color={entity.status === '啟用' ? 'success' : 'error'}>{entity.status}</Tag>
+      ),
+    },
+    {
+      title: '建立時間',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      valueType: 'date',
+      sorter: true,
+    },
+    {
+      title: '操作',
+      valueType: 'option',
+      key: 'option',
+      render: (text, record, _, action) => [
+        <a
+          key="editable"
+          onClick={() => {
+            setEditing(record);
+            form.setFieldsValue(record);
+            setModalOpen(true);
+          }}
+        >
+          編輯
+        </a>,
+        <a
+          key="delete"
+          onClick={() => {
+            message.success('刪除成功 (Demo)');
+          }}
+          className="text-red-500"
+        >
+          刪除
+        </a>,
+      ],
+    },
+  ];
 
-  const moveRow = (dragIndex: number, hoverIndex: number) => {
-    const dragRow = users[dragIndex];
-    setUsers(
-      update(users, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragRow],
-        ],
-      }),
-    );
+  const handleOk = () => {
+    form.validateFields().then((values) => {
+      message.success(editing ? '用戶已更新 (Demo)' : '用戶已新增 (Demo)');
+      setModalOpen(false);
+    });
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Card title="用戶管理" bordered style={{ borderRadius: 12, boxShadow: '0 2px 12px #0001' }}>
-        <Upload
-          listType="picture-card"
-          fileList={fileList}
-          onChange={handleUploadChange}
-          onPreview={handlePreview}
-          beforeUpload={() => false}
-          multiple
-          maxCount={5}
-          showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+    <PageContainer
+      title="用戶管理"
+      subTitle="管理系統用戶，設定角色與權限"
+      extra={
+        <Button
+          type="primary"
+          key="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setEditing(null);
+            form.resetFields();
+            setModalOpen(true);
+          }}
         >
-          {fileList.length >= 5 ? null : (
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>上傳</div>
-            </div>
-          )}
-        </Upload>
-        <Modal
-          open={previewOpen}
-          title={previewTitle}
-          footer={null}
-          onCancel={handleCancel}
-          centered
-        >
-          <Image
-            alt="預覽"
-            src={previewImage}
-            width={800}
-            height={600}
-            style={{ width: '100%', borderRadius: 8, boxShadow: '0 2px 8px #0002', height: 'auto' }}
-          />
-        </Modal>
-        <Table
-          columns={columns}
-          dataSource={users}
-          pagination={false}
-          style={{ marginTop: 24 }}
-          components={{ body: { row: DraggableBodyRow } }}
-          scroll={{ x: 'max-content' }}
-          onRow={(_, index) =>
-            ({
-              'data-row-index': typeof index === 'number' ? index : -1,
-            }) as React.HTMLAttributes<HTMLTableRowElement>
-          }
-        />
-      </Card>
-    </DndProvider>
+          新增用戶
+        </Button>
+      }
+    >
+      <ProTable
+        columns={columns}
+        dataSource={users}
+        rowKey="key"
+        pagination={{
+          showQuickJumper: true,
+        }}
+        search={{
+          layout: 'vertical',
+          defaultCollapsed: false,
+        }}
+        dateFormatter="string"
+        toolbar={{
+          title: '用戶列表',
+        }}
+        cardProps={{
+          bordered: true,
+          style: { borderRadius: 8 }
+        }}
+      />
+
+      <Modal
+        title={editing ? '編輯用戶' : '新增用戶'}
+        open={modalOpen}
+        onOk={handleOk}
+        onCancel={() => setModalOpen(false)}
+        width={500}
+        centered
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="name"
+            label="姓名"
+            rules={[{ required: true, message: '請輸入姓名' }]}
+          >
+            <Input placeholder="請輸入姓名" />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true, message: '請輸入 Email' }, { type: 'email', message: '請輸入有效的 Email' }]}
+          >
+            <Input placeholder="請輸入 Email" />
+          </Form.Item>
+          <Form.Item
+            name="role"
+            label="角色"
+            rules={[{ required: true, message: '請選擇角色' }]}
+          >
+            <Select
+              options={[
+                { value: '管理員', label: '管理員' },
+                { value: '操作員', label: '操作員' },
+                { value: '審核員', label: '審核員' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            label="狀態"
+            rules={[{ required: true, message: '請選擇狀態' }]}
+          >
+            <Select
+              options={[
+                { value: '啟用', label: '啟用' },
+                { value: '停用', label: '停用' },
+              ]}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </PageContainer>
   );
 }

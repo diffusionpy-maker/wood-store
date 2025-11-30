@@ -1,5 +1,8 @@
+
 # Wood Store Auction System – Full Specification Document
-（木作拍賣平台系統完整規格文件）
+（木栖所平台系統完整規格文件）
+
+> 📦 Neon 雲端 PostgreSQL 串接與部署教學請參考 `NEON-SETUP.md`
 
 
 # 1. System Overview（系統概要）

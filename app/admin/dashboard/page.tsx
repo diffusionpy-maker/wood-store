@@ -1,8 +1,18 @@
 'use client';
 import useSWR from 'swr';
-import { Typography, Statistic, Button, Row, Col, Card, Divider, Tabs } from 'antd';
+import {
+  Typography,
+  Statistic,
+  Button,
+  Row,
+  Col,
+  Card,
+  Divider,
+  Tabs,
+  Collapse,
+  theme,
+} from 'antd';
 import ProSkeleton from '@ant-design/pro-skeleton';
-import ProCard from '@ant-design/pro-card';
 import {
   BarChart,
   Bar,
@@ -33,16 +43,23 @@ import {
   DollarOutlined,
   UserOutlined,
   FileTextOutlined,
+  CaretRightOutlined,
+  BarChartOutlined,
+  PieChartOutlined,
+  LineChartOutlined,
+  TableOutlined,
 } from '@ant-design/icons';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+const { Panel } = Collapse;
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const COLORS = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function DashboardPage() {
   const { data, isLoading } = useSWR('/api/mock/dashboard', fetcher);
   const [selected, setSelected] = useState<string | null>(null);
+  const { token } = theme.useToken();
 
   // 折線圖
   const mockLineData = [
@@ -102,8 +119,6 @@ export default function DashboardPage() {
     { key: 3, order: '20250103', user: '陳大華', amount: 860, status: '已退貨' },
     { key: 4, order: '20250104', user: '林小強', amount: 650, status: '已完成' },
     { key: 5, order: '20250105', user: '張小芳', amount: 540, status: '待發貨' },
-    { key: 6, order: '20250106', user: '周小傑', amount: 430, status: '已完成' },
-    { key: 7, order: '20250107', user: '吳小婷', amount: 320, status: '已完成' },
   ];
 
   const tableColumns = [
@@ -115,355 +130,332 @@ export default function DashboardPage() {
 
   const [chartTab, setChartTab] = useState('line');
 
+  const StatCard = ({ title, value, prefix, suffix, color, trend, trendValue }: any) => (
+    <Card
+      hoverable
+      className="overflow-hidden border-0 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+      style={{ borderRadius: 16, background: '#fff' }}
+      styles={{ body: { padding: 24 } }}
+    >
+      <div className="flex justify-between items-start mb-4">
+        <div className={`p-3 rounded-xl ${color} bg-opacity-10`}>{prefix}</div>
+        <div
+          className={`px-2 py-1 rounded-full text-xs font-bold ${trend === 'up' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+        >
+          {trend === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />} {trendValue}
+        </div>
+      </div>
+      <Statistic
+        title={<span className="text-gray-500 font-medium">{title}</span>}
+        value={value}
+        suffix={suffix}
+        valueStyle={{ fontWeight: 700, fontSize: 32, color: '#1e293b' }}
+      />
+    </Card>
+  );
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <ProCard ghost direction="column" gutter={[24, 24]} style={{ padding: 0 }}>
-        {/* 標題 */}
-        <ProCard ghost style={{ paddingBottom: 0 }}>
-          <Title level={3} style={{ color: '#181818', fontWeight: 700, marginBottom: 8 }}>
-            儀表板
-          </Title>
-          <span style={{ color: '#888' }}>即時掌握訂單、營收與商品銷售排行</span>
-        </ProCard>
-        <Divider style={{ margin: '16px 0 0 0' }} />
+    <div className="min-h-screen pb-12">
+      <div className="mb-8">
+        <Title level={2} style={{ color: '#0f172a', marginBottom: 8 }}>
+          Dashboard
+        </Title>
+        <Text type="secondary">歡迎回到管理後台，這是今天的營運概況。</Text>
+      </div>
 
-        {/* 統計卡片 - 多主題分組，色彩、icon、漸層背景更豐富 */}
-        {isLoading ? (
-          <ProSkeleton type="result" active />
-        ) : (
-          <Row gutter={[24, 24]} style={{ marginTop: 8 }}>
-            <Col xs={24} sm={12} lg={6}>
-              <Card
-                hoverable
-                style={{
-                  background: 'linear-gradient(135deg, #1890ff 0%, #43e97b 100%)',
-                  color: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 12px #0001',
-                  transition: 'box-shadow 0.2s',
-                }}
-              >
-                <Statistic
-                  title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>銷售訂單</span>}
-                  value={data?.todayOrders ?? 0}
-                  prefix={<ShoppingCartOutlined style={{ marginRight: 8, color: '#fff' }} />}
-                  valueStyle={{ color: '#fff', fontSize: 28 }}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>
-                  <ArrowUpOutlined style={{ color: '#fff' }} /> 銷售成長{' '}
-                  <span style={{ color: '#fff', fontWeight: 'bold' }}>12%</span>
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card
-                hoverable
-                style={{
-                  background: 'linear-gradient(135deg, #faad14 0%, #f5576c 100%)',
-                  color: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 12px #0001',
-                  transition: 'box-shadow 0.2s',
-                }}
-              >
-                <Statistic
-                  title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>本月營收</span>}
-                  value={data?.monthRevenue ?? 0}
-                  prefix={<DollarOutlined style={{ marginRight: 8, color: '#fff' }} />}
-                  suffix="K"
-                  valueStyle={{ color: '#fff', fontSize: 28 }}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>
-                  <ArrowDownOutlined style={{ color: '#fff' }} /> 營收波動{' '}
-                  <span style={{ color: '#fff', fontWeight: 'bold' }}>5%</span>
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card
-                hoverable
-                style={{
-                  background: 'linear-gradient(135deg, #00c6fb 0%, #005bea 100%)',
-                  color: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 12px #0001',
-                  transition: 'box-shadow 0.2s',
-                }}
-              >
-                <Statistic
-                  title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>活躍用戶</span>}
-                  value={data?.activeUsers ?? 0}
-                  prefix={<UserOutlined style={{ marginRight: 8, color: '#fff' }} />}
-                  valueStyle={{ color: '#fff', fontSize: 28 }}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>
-                  <ArrowUpOutlined style={{ color: '#fff' }} /> 用戶成長{' '}
-                  <span style={{ color: '#fff', fontWeight: 'bold' }}>8%</span>
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card
-                hoverable
-                style={{
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                  color: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 12px #0001',
-                  transition: 'box-shadow 0.2s',
-                }}
-              >
-                <Statistic
-                  title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>待處理訂單</span>}
-                  value={data?.pendingOrders ?? 0}
-                  prefix={<FileTextOutlined style={{ marginRight: 8, color: '#fff' }} />}
-                  valueStyle={{ color: '#fff', fontSize: 28 }}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>
-                  <ArrowUpOutlined style={{ color: '#fff' }} /> 處理進度{' '}
-                  <span style={{ color: '#fff', fontWeight: 'bold' }}>3%</span>
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        )}
-        <Divider style={{ margin: '32px 0 0 0' }} />
-
-        {/* 圖表區塊 Tab 切換 */}
-        <Card style={{ borderRadius: 12, boxShadow: '0 2px 12px #0001', marginBottom: 24 }}>
-          <Tabs
-            activeKey={chartTab}
-            onChange={setChartTab}
+      {isLoading ? (
+        <ProSkeleton type="result" active />
+      ) : (
+        <div className="space-y-6">
+          {/* 統計卡片區域 - 預設展開 */}
+          <Collapse
+            defaultActiveKey={['stats']}
+            ghost
+            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+            className="bg-transparent"
             items={[
               {
-                key: 'line',
-                label: '營收趨勢(折線)',
+                key: 'stats',
+                label: <span className="font-bold text-lg text-slate-700">核心指標</span>,
+                className: 'border-none p-0',
                 children: (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={mockLineData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="#1890ff"
-                        strokeWidth={2}
-                        name="營收($K)"
+                  <Row gutter={[24, 24]}>
+                    <Col xs={24} sm={12} lg={6}>
+                      <StatCard
+                        title="今日訂單"
+                        value={data?.todayOrders ?? 128}
+                        prefix={<ShoppingCartOutlined className="text-2xl text-blue-500" />}
+                        color="bg-blue-500"
+                        trend="up"
+                        trendValue="12%"
                       />
-                      <Line
-                        type="monotone"
-                        dataKey="orders"
-                        stroke="#52c41a"
-                        strokeWidth={2}
-                        name="訂單數"
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                      <StatCard
+                        title="本月營收"
+                        value={data?.monthRevenue ?? 45.2}
+                        suffix="K"
+                        prefix={<DollarOutlined className="text-2xl text-emerald-500" />}
+                        color="bg-emerald-500"
+                        trend="down"
+                        trendValue="5%"
                       />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ),
-              },
-              {
-                key: 'pie',
-                label: '訂單狀態分佈(圓餅)',
-                children: (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={mockPieData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name}: ${value}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {mockPieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ),
-              },
-              {
-                key: 'bar',
-                label: '商品銷售排行(長條)',
-                children: (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={mockBarData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="sales" fill="#1890ff" name="銷量" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ),
-              },
-              {
-                key: 'radar',
-                label: '用戶行為分佈(雷達)',
-                children: (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={mockRadarData}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subject" />
-                      <PolarRadiusAxis />
-                      <Radar
-                        name="行為"
-                        dataKey="A"
-                        stroke="#1890ff"
-                        fill="#1890ff"
-                        fillOpacity={0.6}
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                      <StatCard
+                        title="活躍用戶"
+                        value={data?.activeUsers ?? 892}
+                        prefix={<UserOutlined className="text-2xl text-violet-500" />}
+                        color="bg-violet-500"
+                        trend="up"
+                        trendValue="8%"
                       />
-                      <Tooltip />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                ),
-              },
-              {
-                key: 'area',
-                label: '月度活躍用戶(面積)',
-                children: (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={mockAreaData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Area
-                        type="monotone"
-                        dataKey="users"
-                        stroke="#1890ff"
-                        fill="#1890ff"
-                        fillOpacity={0.4}
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                      <StatCard
+                        title="待處理"
+                        value={data?.pendingOrders ?? 15}
+                        prefix={<FileTextOutlined className="text-2xl text-amber-500" />}
+                        color="bg-amber-500"
+                        trend="up"
+                        trendValue="3%"
                       />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                ),
-              },
-              {
-                key: 'table',
-                label: '訂單明細(表格)',
-                children: (
-                  <div style={{ overflowX: 'auto', padding: '16px 0' }}>
-                    <table
-                      style={{
-                        width: '100%',
-                        borderCollapse: 'collapse',
-                        background: '#fff',
-                        borderRadius: 8,
-                        boxShadow: '0 2px 8px #eee',
-                      }}
-                    >
-                      <thead>
-                        <tr style={{ background: '#f5f5f5' }}>
-                          {tableColumns.map((col) => (
-                            <th
-                              key={col.key}
-                              style={{
-                                padding: 8,
-                                fontWeight: 600,
-                                color: '#333',
-                                borderBottom: '1px solid #eee',
-                              }}
-                            >
-                              {col.title}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {mockTableData.map((row) => (
-                          <tr key={row.key}>
-                            <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-                              {row.order}
-                            </td>
-                            <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-                              {row.user}
-                            </td>
-                            <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-                              {row.amount}
-                            </td>
-                            <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-                              {row.status}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                    </Col>
+                  </Row>
                 ),
               },
             ]}
           />
-        </Card>
-        <Divider style={{ margin: '32px 0 0 0' }} />
 
-        {/* 商品銷售排行 TOP 5 - 美化版 */}
-        <ProCard
-          bordered
-          style={{
-            background: 'linear-gradient(135deg, #f5f7fa 0%, #e0eafc 100%)',
-            borderRadius: 16,
-            boxShadow: '0 4px 24px #dbeafe',
-            marginTop: 16,
-            padding: 24,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
-            <BarChart style={{ fontSize: 32, color: '#1890ff', marginRight: 12 }} />
-            <Title level={4} style={{ color: '#1890ff', marginBottom: 0, fontWeight: 700 }}>
-              商品銷售排行 TOP 5
-            </Title>
-            <span style={{ color: '#888', marginLeft: 16, fontSize: 16 }}>熱銷商品一目了然</span>
-          </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={data?.topProducts ?? []}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: '#1890ff', fontWeight: 600, fontSize: 14 }} />
-              <YAxis tick={{ fill: '#888', fontSize: 13 }} />
-              <Tooltip
-                contentStyle={{ background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}
-                labelStyle={{ color: '#1890ff', fontWeight: 600 }}
-              />
-              <Legend wrapperStyle={{ color: '#1890ff', fontWeight: 600 }} />
-              <Bar
-                dataKey="sales"
-                name="銷量"
-                radius={[8, 8, 0, 0]}
-                fill="#52c41a"
-                barSize={32}
-                onClick={(data) => setSelected(data.name)}
-                style={{ cursor: 'pointer' }}
-                label={{ position: 'top', fill: '#1890ff', fontWeight: 700, fontSize: 16 }}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-          {selected && (
-            <div
-              style={{
-                marginTop: 20,
-                padding: 14,
-                background: '#e0eafc',
-                borderRadius: 8,
-                color: '#1890ff',
-                fontWeight: 600,
-              }}
-            >
-              <b>已選擇商品：</b> {selected}
-              <Button className="ml-4" size="small" onClick={() => setSelected(null)}>
-                清除
-              </Button>
-            </div>
-          )}
-        </ProCard>
-      </ProCard>
+          {/* 圖表分析區域 - 可折疊 */}
+          <Collapse
+            defaultActiveKey={['charts']}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+            items={[
+              {
+                key: 'charts',
+                label: (
+                  <div className="flex items-center gap-2 py-2">
+                    <BarChartOutlined className="text-blue-500" />
+                    <span className="font-bold text-lg text-slate-700">數據分析</span>
+                  </div>
+                ),
+                className: 'border-none',
+                children: (
+                  <Tabs
+                    activeKey={chartTab}
+                    onChange={setChartTab}
+                    type="card"
+                    items={[
+                      {
+                        key: 'line',
+                        label: (
+                          <span>
+                            <LineChartOutlined /> 營收趨勢
+                          </span>
+                        ),
+                        children: (
+                          <div className="h-[400px] w-full mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <LineChart data={mockLineData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis dataKey="name" stroke="#64748b" />
+                                <YAxis stroke="#64748b" />
+                                <Tooltip
+                                  contentStyle={{
+                                    borderRadius: 8,
+                                    border: 'none',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                  }}
+                                />
+                                <Legend />
+                                <Line
+                                  type="monotone"
+                                  dataKey="revenue"
+                                  stroke="#3b82f6"
+                                  strokeWidth={3}
+                                  dot={{ r: 4 }}
+                                  activeDot={{ r: 8 }}
+                                  name="營收($K)"
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="orders"
+                                  stroke="#10b981"
+                                  strokeWidth={3}
+                                  dot={{ r: 4 }}
+                                  name="訂單數"
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </div>
+                        ),
+                      },
+                      {
+                        key: 'pie',
+                        label: (
+                          <span>
+                            <PieChartOutlined /> 訂單分佈
+                          </span>
+                        ),
+                        children: (
+                          <div className="h-[400px] w-full mt-4 flex justify-center">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie
+                                  data={mockPieData}
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius={80}
+                                  outerRadius={120}
+                                  paddingAngle={5}
+                                  dataKey="value"
+                                >
+                                  {mockPieData.map((entry, index) => (
+                                    <Cell
+                                      key={`cell-${index}`}
+                                      fill={COLORS[index % COLORS.length]}
+                                    />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend verticalAlign="bottom" height={36} />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        ),
+                      },
+                      {
+                        key: 'table',
+                        label: (
+                          <span>
+                            <TableOutlined /> 近期訂單
+                          </span>
+                        ),
+                        children: (
+                          <div className="overflow-x-auto mt-4">
+                            <table className="w-full text-left border-collapse">
+                              <thead>
+                                <tr className="border-b border-gray-100">
+                                  {tableColumns.map((col) => (
+                                    <th
+                                      key={col.key}
+                                      className="p-4 font-semibold text-slate-600 bg-gray-50 first:rounded-tl-lg last:rounded-tr-lg"
+                                    >
+                                      {col.title}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {mockTableData.map((row) => (
+                                  <tr
+                                    key={row.key}
+                                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                                  >
+                                    <td className="p-4 text-slate-700 font-medium">{row.order}</td>
+                                    <td className="p-4 text-slate-600">{row.user}</td>
+                                    <td className="p-4 text-slate-600 font-mono">
+                                      NT$ {row.amount}
+                                    </td>
+                                    <td className="p-4">
+                                      <span
+                                        className={`px-2 py-1 rounded-full text-xs font-bold 
+                                      ${
+                                        row.status === '已完成'
+                                          ? 'bg-green-100 text-green-600'
+                                          : row.status === '待付款'
+                                            ? 'bg-amber-100 text-amber-600'
+                                            : 'bg-gray-100 text-gray-600'
+                                      }`}
+                                      >
+                                        {row.status}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ),
+                      },
+                    ]}
+                  />
+                ),
+              },
+            ]}
+          />
+
+          {/* 銷售排行 - 可折疊 */}
+          <Collapse
+            defaultActiveKey={['products']}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+            items={[
+              {
+                key: 'products',
+                label: (
+                  <div className="flex items-center gap-2 py-2">
+                    <ShoppingCartOutlined className="text-emerald-500" />
+                    <span className="font-bold text-lg text-slate-700">熱銷商品排行</span>
+                  </div>
+                ),
+                className: 'border-none',
+                children: (
+                  <>
+                    <div className="h-[350px] w-full mt-4">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data?.topProducts ?? mockBarData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                          <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} />
+                          <YAxis tick={{ fill: '#64748b', fontSize: 12 }} />
+                          <Tooltip
+                            cursor={{ fill: '#f8fafc' }}
+                            contentStyle={{
+                              borderRadius: 8,
+                              border: 'none',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                          />
+                          <Bar
+                            dataKey="sales"
+                            name="銷量"
+                            radius={[4, 4, 0, 0]}
+                            fill="#3b82f6"
+                            barSize={40}
+                            onClick={(data) => setSelected(data.name)}
+                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                          >
+                            {mockBarData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {selected && (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                        <span className="text-blue-700 font-medium">
+                          已選擇商品：<span className="font-bold">{selected}</span>
+                        </span>
+                        <Button
+                          type="text"
+                          size="small"
+                          onClick={() => setSelected(null)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          清除篩選
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ),
+              },
+            ]}
+          />
+        </div>
+      )}
     </div>
   );
 }

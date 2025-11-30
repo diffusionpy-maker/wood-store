@@ -8,26 +8,20 @@ import {
   Statistic,
   Button,
   Space,
-  Divider,
-  Card,
   Modal,
   Upload,
 } from 'antd';
-import ProCard from '@ant-design/pro-card';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
-import ProSkeleton from '@ant-design/pro-skeleton';
+import { Card, Table, Skeleton } from 'antd';
 import { useState, useRef, useEffect } from 'react';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
   DownloadOutlined,
-  DollarCircleOutlined,
-  FileDoneOutlined,
-  WarningOutlined,
-  CloseSquareOutlined,
   PlusOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
+import PageContainer from '../components/PageContainer';
 // 表格 hover 效果 CSS
 import './payments-table-hover.css';
 
@@ -70,20 +64,20 @@ export default function PaymentsPage() {
     }
   };
 
-  const columns: ProColumns<any>[] = [
+  const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
       width: 80,
-      search: false,
+      // search: false,
     },
     {
       title: '訂單編號',
       dataIndex: 'orderNumber',
       key: 'orderNumber',
       width: 120,
-      search: true,
+      // search: true,
     },
     {
       title: '金流商',
@@ -146,7 +140,7 @@ export default function PaymentsPage() {
       key: 'createdAt',
       width: 150,
       search: true,
-      valueType: 'dateRange',
+      // valueType: 'dateRange',
       sorter: true,
       render: (_dom: any, entity: any) => entity.createdAt,
     },
@@ -154,65 +148,74 @@ export default function PaymentsPage() {
 
   const stats = data
     ? {
-        total: data.length,
-        confirmed: data.filter((p: any) => p.status === 'confirmed').length,
-        pending: data.filter((p: any) => p.status === 'pending').length,
-        failed: data.filter((p: any) => p.status === 'failed').length,
-        totalAmount: data.reduce((sum: number, p: any) => sum + (p.amount || 0), 0),
-      }
+      total: data.length,
+      confirmed: data.filter((p: any) => p.status === 'confirmed').length,
+      pending: data.filter((p: any) => p.status === 'pending').length,
+      failed: data.filter((p: any) => p.status === 'failed').length,
+      totalAmount: data.reduce((sum: number, p: any) => sum + (p.amount || 0), 0),
+    }
     : { total: 0, confirmed: 0, pending: 0, failed: 0, totalAmount: 0 };
 
   return (
-    <ProCard
-      ghost
-      direction="column"
-      gutter={[16, 16]}
-      style={{ minHeight: '100vh', background: '#f5f5f5' }}
+    <PageContainer
+      title="金流紀錄"
+      subTitle="查看所有金流交易與狀態，支援篩選、搜尋、下載報表"
+      extra={
+        <Button icon={<DownloadOutlined />}>下載報表</Button>
+      }
     >
-      <ProCard ghost>
-        <Title level={3} style={{ color: '#1677ff', fontWeight: 700, marginBottom: 8 }}>
-          金流紀錄
-        </Title>
-        <span style={{ color: '#888' }}>查看所有金流交易與狀態，支援篩選、搜尋、下載報表</span>
-      </ProCard>
-
       {/* 骨架屏 loading 效果 */}
       {isLoading ? (
-        <ProSkeleton type="list" active />
+        <Skeleton active paragraph={{ rows: 8 }} />
       ) : (
         <>
           {/* 統計卡片 */}
-          <Row gutter={[16, 16]} style={{ marginBottom: 8 }}>
-            {/* ...existing code... */}
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Col xs={24} sm={12} lg={6}>
+              <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
+                <Space>
+                  <BankOutlined style={{ fontSize: 24, color: '#1890ff', padding: 8, background: '#e6f7ff', borderRadius: '50%' }} />
+                  <Statistic title="總交易筆數" value={stats.total} styles={{ content: { fontWeight: 600 } }} />
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
+                <Space>
+                  <CheckCircleOutlined style={{ fontSize: 24, color: '#52c41a', padding: 8, background: '#f6ffed', borderRadius: '50%' }} />
+                  <Statistic title="成功交易" value={stats.confirmed} styles={{ content: { fontWeight: 600 } }} />
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
+                <Space>
+                  <ClockCircleOutlined style={{ fontSize: 24, color: '#faad14', padding: 8, background: '#fffbe6', borderRadius: '50%' }} />
+                  <Statistic title="待確認" value={stats.pending} styles={{ content: { fontWeight: 600 } }} />
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
+                <Space>
+                  <CloseCircleOutlined style={{ fontSize: 24, color: '#f5222d', padding: 8, background: '#fff1f0', borderRadius: '50%' }} />
+                  <Statistic title="失敗交易" value={stats.failed} styles={{ content: { fontWeight: 600 } }} />
+                </Space>
+              </Card>
+            </Col>
           </Row>
 
-          {/* 分隔線 */}
-          <Divider style={{ margin: '8px 0 16px 0' }} />
-
-          {/* 表格 */}
-          <ProCard
-            bordered
-            style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 12px #e6e6e6' }}
-          >
-            <Space style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button icon={<DownloadOutlined />}>下載報表</Button>
-            </Space>
-            <ProTable
+          <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }}>
+            <Table
               rowKey="id"
               columns={columns}
               dataSource={data}
               loading={isLoading}
               pagination={{ pageSize: 10 }}
-              search={{
-                labelWidth: 'auto',
-              }}
-              options={{
-                setting: false,
-              }}
-              tableStyle={{ borderRadius: 12, overflow: 'hidden' }}
-              rowClassName={() => 'pro-table-row-hover'}
+              style={{ overflow: 'hidden', borderRadius: 8 }}
+              className="pro-table-row-hover"
             />
-          </ProCard>
+          </Card>
 
           {/* 金流憑證 Modal（Demo，僅顯示第一筆） */}
           <Modal
@@ -221,6 +224,7 @@ export default function PaymentsPage() {
             onCancel={() => setModalOpen(false)}
             width={600}
             footer={null}
+            centered
           >
             <Upload
               listType="picture-card"
@@ -242,6 +246,6 @@ export default function PaymentsPage() {
           </Modal>
         </>
       )}
-    </ProCard>
+    </PageContainer>
   );
 }
