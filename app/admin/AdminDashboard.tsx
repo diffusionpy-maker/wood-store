@@ -130,7 +130,7 @@ export default function AdminDashboard({
               title="總營收"
               value={112893}
               precision={2}
-              styles={{ content: { color: '#3f8600' } }}
+              style={{ color: '#3f8600' }}
               prefix={<DollarOutlined />}
               suffix=""
             />
@@ -144,7 +144,7 @@ export default function AdminDashboard({
             <Statistic
               title="總訂單"
               value={93}
-              styles={{ content: { color: '#1677ff' } }}
+              style={{ color: '#1677ff' }}
               prefix={<ShoppingCartOutlined />}
             />
             <div className="flex items-center mt-2 text-green-500">
@@ -157,7 +157,7 @@ export default function AdminDashboard({
             <Statistic
               title="總用戶"
               value={1203}
-              styles={{ content: { color: '#cf1322' } }}
+              style={{ color: '#cf1322' }}
               prefix={<UserOutlined />}
             />
             <div className="flex items-center mt-2 text-red-500">
@@ -171,7 +171,7 @@ export default function AdminDashboard({
               title="成長率"
               value={9.3}
               precision={2}
-              styles={{ content: { color: '#722ed1' } }}
+              style={{ color: '#722ed1' }}
               prefix={<RiseOutlined />}
               suffix="%"
             />

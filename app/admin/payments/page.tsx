@@ -175,7 +175,7 @@ export default function PaymentsPage() {
               <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
                 <Space>
                   <BankOutlined style={{ fontSize: 24, color: '#1890ff', padding: 8, background: '#e6f7ff', borderRadius: '50%' }} />
-                  <Statistic title="總交易筆數" value={stats.total} styles={{ content: { fontWeight: 600 } }} />
+                   <Statistic title="總交易筆數" value={stats.total} style={{ fontWeight: 600 }} />
                 </Space>
               </Card>
             </Col>
@@ -183,7 +183,7 @@ export default function PaymentsPage() {
               <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
                 <Space>
                   <CheckCircleOutlined style={{ fontSize: 24, color: '#52c41a', padding: 8, background: '#f6ffed', borderRadius: '50%' }} />
-                  <Statistic title="成功交易" value={stats.confirmed} styles={{ content: { fontWeight: 600 } }} />
+                  <Statistic title="成功交易" value={stats.confirmed} style={{ fontWeight: 600 }} />
                 </Space>
               </Card>
             </Col>
@@ -191,7 +191,7 @@ export default function PaymentsPage() {
               <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
                 <Space>
                   <ClockCircleOutlined style={{ fontSize: 24, color: '#faad14', padding: 8, background: '#fffbe6', borderRadius: '50%' }} />
-                  <Statistic title="待確認" value={stats.pending} styles={{ content: { fontWeight: 600 } }} />
+                  <Statistic title="待確認" value={stats.pending} style={{ fontWeight: 600 }} />
                 </Space>
               </Card>
             </Col>
@@ -199,7 +199,7 @@ export default function PaymentsPage() {
               <Card style={{ borderRadius: 8, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }} hoverable>
                 <Space>
                   <CloseCircleOutlined style={{ fontSize: 24, color: '#f5222d', padding: 8, background: '#fff1f0', borderRadius: '50%' }} />
-                  <Statistic title="失敗交易" value={stats.failed} styles={{ content: { fontWeight: 600 } }} />
+                  <Statistic title="失敗交易" value={stats.failed} style={{ fontWeight: 600 }} />
                 </Space>
               </Card>
             </Col>

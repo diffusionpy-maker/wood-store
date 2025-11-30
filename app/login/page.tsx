@@ -5,9 +5,9 @@ import { Mail, Lock, Loader2, LogIn, ArrowRight, Check } from 'lucide-react';
 import LineLoginButton from '@/components/auth/LineLoginButton';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
-export default function FrontendLoginPage() {
+function LoginFormContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -295,5 +295,17 @@ export default function FrontendLoginPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function FrontendLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#f8fafc]">
+        <Loader2 className="animate-spin w-10 h-10 text-slate-400" />
+      </div>
+    }>
+      <LoginFormContent />
+    </Suspense>
   );
 }
