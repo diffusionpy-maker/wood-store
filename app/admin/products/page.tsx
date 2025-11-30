@@ -21,8 +21,11 @@ import {
   Statistic,
   Divider,
   Upload,
+  Card,
+  ConfigProvider,
 } from 'antd';
-import ProCard from '@ant-design/pro-card';
+import zhTW from 'antd/es/locale/zh_TW';
+// ProCard 已移除，改用 antd Card
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import ProSkeleton from '@ant-design/pro-skeleton';
 import { useState, useRef } from 'react';
@@ -34,13 +37,15 @@ import {
   AppstoreOutlined,
   WarningOutlined,
   CloseCircleOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
+import PageContainer from '../components/PageContainer';
 
 const { Title } = Typography;
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ProductsPage() {
-  const { data, isLoading, mutate } = useSWR('/api/mock/products', fetcher);
+  const { data, isLoading } = useSWR('/api/mock/products', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any | null>(null);
   const [form] = Form.useForm();
@@ -53,7 +58,7 @@ export default function ProductsPage() {
       dataIndex: 'id',
       key: 'id',
       width: 80,
-      search: false,
+      search: true,
     },
     {
       title: '商品名稱',
@@ -69,10 +74,11 @@ export default function ProductsPage() {
             src={`https://via.placeholder.com/40?text=${entity.id}`}
             alt={`商品 ${entity.name}`}
             preview={{
-              mask: <EyeOutlined />,
+              cover: <EyeOutlined />,
             }}
+            style={{ borderRadius: 4 }}
           />
-          <span>{entity.name}</span>
+          <span className="font-medium">{entity.name}</span>
         </Space>
       ),
     },
@@ -82,7 +88,10 @@ export default function ProductsPage() {
       key: 'price',
       width: 100,
       sorter: (a: any, b: any) => a.price - b.price,
-      render: (_dom: any, entity: any) => `$${entity.price.toFixed(2)}`,
+      search: true,
+      render: (_dom: any, entity: any) => (
+        <span className="text-emerald-600 font-bold">${entity.price.toFixed(2)}</span>
+      ),
     },
     {
       title: '類別',
@@ -90,10 +99,11 @@ export default function ProductsPage() {
       key: 'category',
       width: 120,
       filters: [
-        { text: 'Electronics', value: 'Electronics' },
-        { text: 'Collectibles', value: 'Collectibles' },
-        { text: 'Fashion', value: 'Fashion' },
+        { text: '電子產品', value: 'Electronics' },
+        { text: '收藏品', value: 'Collectibles' },
+        { text: '時尚', value: 'Fashion' },
       ],
+      search: true,
       render: (_dom: any, entity: any) => {
         const colorMap: Record<string, string> = {
           Electronics: 'blue',
@@ -109,8 +119,9 @@ export default function ProductsPage() {
       key: 'stock',
       width: 80,
       sorter: (a: any, b: any) => a.stock - b.stock,
+      search: true,
       render: (_dom: any, entity: any) => (
-        <Tag color={entity.stock > 10 ? 'green' : entity.stock > 0 ? 'orange' : 'red'}>
+        <Tag color={entity.stock > 10 ? 'success' : entity.stock > 0 ? 'warning' : 'error'}>
           {entity.stock > 0 ? `${entity.stock}件` : '缺貨'}
         </Tag>
       ),
@@ -122,7 +133,7 @@ export default function ProductsPage() {
       width: 150,
       search: true,
       valueType: 'dateRange',
-      render: (_dom: any, entity: any) => entity.createdAt,
+      render: (_dom: any, entity: any) => <span className="text-gray-500">{entity.createdAt}</span>,
     },
     {
       title: '操作',
@@ -131,8 +142,8 @@ export default function ProductsPage() {
       fixed: 'right',
       valueType: 'option',
       render: (_dom: any, entity: any) => (
-        <>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => onEdit(entity)}>
+        <Space>
+          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(entity)}>
             編輯
           </Button>
           <Popconfirm
@@ -142,11 +153,11 @@ export default function ProductsPage() {
             okText="是"
             cancelText="否"
           >
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+            <Button type="text" size="small" danger icon={<DeleteOutlined />}>
               刪除
             </Button>
           </Popconfirm>
-        </>
+        </Space>
       ),
     },
   ];
@@ -159,9 +170,12 @@ export default function ProductsPage() {
 
   function onDelete(id: number) {
     notification.success({
+      title: '刪除成功',
       message: '刪除成功',
       description: `已刪除商品 #${id}（Demo 無實際刪除）`,
       placement: 'topRight',
+      duration: 2,
+      icon: <DeleteOutlined style={{ color: '#3f8600' }} />,
     });
   }
 
@@ -174,8 +188,9 @@ export default function ProductsPage() {
   function handleOk() {
     form.validateFields().then((values) => {
       notification.success({
+        title: editing ? '商品已更新' : '商品已新增',
         message: editing ? '商品已更新' : '商品已新增',
-        description: 'Demo 操作，未實際儲存',
+        description: 'Demo操作，未實際儲存',
         placement: 'topRight',
       });
       setModalOpen(false);
@@ -186,6 +201,7 @@ export default function ProductsPage() {
   function batchDelete() {
     if (selectedRowKeys.length === 0) {
       notification.warning({
+        title: '提示',
         message: '請先選取要刪除的商品',
         placement: 'topRight',
       });
@@ -193,13 +209,14 @@ export default function ProductsPage() {
     }
     Modal.confirm({
       title: '批次刪除',
-      content: `確定要刪除選取的 ${selectedRowKeys.length} 個商品嗎？`,
+      content: `確定要刪除選取的 ${selectedRowKeys.length} 件商品嗎？`,
       okText: '確定',
       cancelText: '取消',
       onOk() {
         notification.success({
+          title: '批次刪除成功',
           message: '批次刪除成功',
-          description: `已刪除 ${selectedRowKeys.length} 個商品（Demo）`,
+          description: `已刪除 ${selectedRowKeys.length} 件商品（Demo）`,
           placement: 'topRight',
         });
         setSelectedRowKeys([]);
@@ -208,169 +225,176 @@ export default function ProductsPage() {
   }
 
   return (
-    <ProCard
-      ghost
-      direction="column"
-      gutter={[16, 16]}
-      style={{ minHeight: '100vh', background: '#f5f5f5' }}
+    <PageContainer
+      title="商品管理"
+      subTitle="管理商品資訊，支援搜尋、篩選、批次操作"
+      extra={
+        <Space>
+          <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
+            新增商品
+          </Button>
+          <Button danger onClick={batchDelete} disabled={selectedRowKeys.length === 0}>
+            批次刪除 ({selectedRowKeys.length})
+          </Button>
+        </Space>
+      }
     >
-      <ProCard ghost>
-        <Title level={3} style={{ color: '#1677ff', fontWeight: 700, marginBottom: 8 }}>
-          商品管理
-        </Title>
-        <span style={{ color: '#888' }}>管理商品資訊，支援搜尋、篩選、批次操作</span>
-      </ProCard>
-
       {/* 骨架屏 loading 效果 */}
       {isLoading ? (
         <ProSkeleton type="list" active />
       ) : (
         <>
           {/* 統計卡片一行 4 個橫向排列 */}
-          <Row gutter={[16, 16]} style={{ marginBottom: 8 }}>
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={12} lg={6}>
-              <ProCard
-                bordered
+              <Card
                 style={{
-                  background: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 8px #e6e6e6',
-                  marginBottom: 0,
+                  borderRadius: 8,
+                  boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)',
                 }}
                 hoverable
+                variant="outlined"
               >
                 <Space>
-                  <AppstoreOutlined style={{ fontSize: 32, color: '#1890ff' }} />
+                  <AppstoreOutlined
+                    style={{
+                      fontSize: 24,
+                      color: '#1890ff',
+                      padding: 8,
+                      background: '#e6f7ff',
+                      borderRadius: '50%',
+                    }}
+                  />
                   <Statistic
                     title="總商品數"
                     value={data?.length ?? 0}
-                    valueStyle={{ color: '#1890ff' }}
+                    styles={{ content: { fontWeight: 600 } }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
                   />
                 </Space>
-              </ProCard>
+              </Card>
             </Col>
             <Col xs={24} sm={12} lg={6}>
-              <ProCard
-                bordered
+              <Card
                 style={{
-                  background: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 8px #e6e6e6',
-                  marginBottom: 0,
+                  borderRadius: 8,
+                  boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)',
                 }}
                 hoverable
+                variant="outlined"
               >
                 <Space>
-                  <ShoppingOutlined style={{ fontSize: 32, color: '#52c41a' }} />
+                  <ShoppingOutlined
+                    style={{
+                      fontSize: 24,
+                      color: '#52c41a',
+                      padding: 8,
+                      background: '#f6ffed',
+                      borderRadius: '50%',
+                    }}
+                  />
                   <Statistic
                     title="總庫存"
                     value={data?.reduce((sum: number, p: any) => sum + p.stock, 0) ?? 0}
-                    valueStyle={{ color: '#52c41a' }}
+                    styles={{ content: { fontWeight: 600 } }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
                   />
                 </Space>
-              </ProCard>
+              </Card>
             </Col>
             <Col xs={24} sm={12} lg={6}>
-              <ProCard
-                bordered
+              <Card
                 style={{
-                  background: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 8px #e6e6e6',
-                  marginBottom: 0,
+                  borderRadius: 8,
+                  boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)',
                 }}
                 hoverable
+                variant="outlined"
               >
                 <Space>
-                  <CloseCircleOutlined style={{ fontSize: 32, color: '#f5222d' }} />
+                  <CloseCircleOutlined
+                    style={{
+                      fontSize: 24,
+                      color: '#f5222d',
+                      padding: 8,
+                      background: '#fff1f0',
+                      borderRadius: '50%',
+                    }}
+                  />
                   <Statistic
                     title="缺貨商品"
                     value={data?.filter((p: any) => p.stock === 0).length ?? 0}
-                    valueStyle={{ color: '#f5222d' }}
+                    styles={{ content: { fontWeight: 600 } }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
                   />
                 </Space>
-              </ProCard>
+              </Card>
             </Col>
             <Col xs={24} sm={12} lg={6}>
-              <ProCard
-                bordered
+              <Card
                 style={{
-                  background: '#fff',
-                  borderRadius: 12,
-                  boxShadow: '0 2px 8px #e6e6e6',
-                  marginBottom: 0,
+                  borderRadius: 8,
+                  boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)',
                 }}
                 hoverable
+                variant="outlined"
               >
                 <Space>
-                  <WarningOutlined style={{ fontSize: 32, color: '#faad14' }} />
+                  <WarningOutlined
+                    style={{
+                      fontSize: 24,
+                      color: '#faad14',
+                      padding: 8,
+                      background: '#fffbe6',
+                      borderRadius: '50%',
+                    }}
+                  />
                   <Statistic
                     title="低庫存預警"
                     value={data?.filter((p: any) => p.stock > 0 && p.stock <= 10).length ?? 0}
-                    valueStyle={{ color: '#faad14' }}
+                    styles={{ content: { fontWeight: 600 } }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
                   />
                 </Space>
-              </ProCard>
+              </Card>
             </Col>
           </Row>
 
-          {/* 分隔線 */}
-          <Divider style={{ margin: '8px 0 16px 0' }} />
-
-          {/* 表格卡片寬度限制，margin-top拉近視覺重心 */}
-          <ProCard
-            bordered
-            style={{
-              background: '#fff',
-              borderRadius: 16,
-              boxShadow: '0 2px 12px #e6e6e6',
-              maxWidth: 1200,
-              margin: '24px auto 0 auto',
+          <ProTable
+            rowKey="id"
+            columns={columns}
+            dataSource={data}
+            loading={isLoading}
+            pagination={{ pageSize: 10 }}
+            search={{
+              labelWidth: 'auto',
+              collapsed: false,
             }}
-          >
-            <Space style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-              <Space>
-                <Button type="primary" onClick={onAdd}>
-                  新增商品
-                </Button>
-                <Button danger onClick={batchDelete} disabled={selectedRowKeys.length === 0}>
-                  批次刪除 ({selectedRowKeys.length})
-                </Button>
-              </Space>
-            </Space>
-            <ProTable
-              rowKey="id"
-              columns={columns}
-              dataSource={data}
-              loading={isLoading}
-              pagination={{ pageSize: 10 }}
-              search={{
-                labelWidth: 'auto',
-              }}
-              actionRef={actionRef}
-              options={{
-                setting: false,
-              }}
-              rowSelection={{
-                selectedRowKeys,
-                onChange: setSelectedRowKeys,
-              }}
-              tableStyle={{ borderRadius: 12, overflow: 'hidden' }}
-              rowClassName={() => 'pro-table-row-hover'}
-            />
-          </ProCard>
+            actionRef={actionRef}
+            options={{
+              setting: true,
+              density: true,
+              fullScreen: true,
+            }}
+            rowSelection={{
+              selectedRowKeys,
+              onChange: setSelectedRowKeys,
+            }}
+            cardProps={{
+              title: '商品列表',
+              style: { borderRadius: 8 },
+            }}
+            tableStyle={{ overflow: 'hidden' }}
+            rowClassName={() => 'pro-table-row-hover'}
+          />
 
           {/* 新增/編輯 Modal */}
           <Modal
@@ -381,6 +405,7 @@ export default function ProductsPage() {
             okText="儲存"
             cancelText="取消"
             width={600}
+            centered
           >
             <Form form={form} layout="vertical">
               <Form.Item label="商品圖片" name="image">
@@ -391,7 +416,8 @@ export default function ProductsPage() {
                   beforeUpload={() => false} // 禁止自動上傳，Demo用
                 >
                   <div>
-                    <span style={{ color: '#1677ff' }}>上傳圖片</span>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>上傳</div>
                   </div>
                 </Upload>
               </Form.Item>
@@ -400,7 +426,7 @@ export default function ProductsPage() {
                 label="商品名稱"
                 rules={[{ required: true, message: '請輸入商品名稱' }]}
               >
-                <Input placeholder="輸入商品名稱" />
+                <Input placeholder="請輸入" />
               </Form.Item>
               <Row gutter={16}>
                 <Col span={12}>
@@ -409,7 +435,12 @@ export default function ProductsPage() {
                     label="價格"
                     rules={[{ required: true, message: '請輸入價格' }]}
                   >
-                    <InputNumber min={0} placeholder="0.00" style={{ width: '100%' }} />
+                    <InputNumber
+                      min={0}
+                      placeholder="請輸入"
+                      style={{ width: '100%' }}
+                      prefix="$"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -418,7 +449,7 @@ export default function ProductsPage() {
                     label="庫存"
                     rules={[{ required: true, message: '請輸入庫存' }]}
                   >
-                    <InputNumber min={0} placeholder="0" style={{ width: '100%' }} />
+                    <InputNumber min={0} placeholder="請輸入" style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -428,21 +459,21 @@ export default function ProductsPage() {
                 rules={[{ required: true, message: '請選取類別' }]}
               >
                 <Select
-                  placeholder="選取類別"
+                  placeholder="請選擇"
                   options={[
-                    { value: 'Electronics', label: 'Electronics' },
-                    { value: 'Collectibles', label: 'Collectibles' },
-                    { value: 'Fashion', label: 'Fashion' },
+                    { value: 'Electronics', label: '電子產品' },
+                    { value: 'Collectibles', label: '收藏品' },
+                    { value: 'Fashion', label: '時尚' },
                   ]}
                 />
               </Form.Item>
               <Form.Item name="description" label="描述">
-                <Input.TextArea placeholder="輸入商品描述" rows={4} />
+                <Input.TextArea placeholder="請輸入商品描述" rows={4} />
               </Form.Item>
             </Form>
           </Modal>
         </>
       )}
-    </ProCard>
+    </PageContainer>
   );
 }

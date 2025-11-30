@@ -1,6 +1,7 @@
 'use client';
 
 import { ConfigProvider, theme } from 'antd';
+import zhTW from 'antd/es/locale/zh_TW';
 import { ReactNode } from 'react';
 
 interface AntdConfigProviderProps {
@@ -10,6 +11,7 @@ interface AntdConfigProviderProps {
 export function AntdConfigProvider({ children }: AntdConfigProviderProps) {
   return (
     <ConfigProvider
+      locale={zhTW}
       theme={{
         algorithm: theme.defaultAlgorithm,
         token: {

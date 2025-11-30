@@ -1,11 +1,11 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { NextAuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import LineProvider from 'next-auth/providers/line';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import type { JWT } from 'next-auth/jwt';
-import type { AdapterUser } from 'next-auth/adapters';
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -53,6 +53,14 @@ export const authOptions: NextAuthOptions = {
           role: user.role
         } as unknown as any;
       }
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+    }),
+    LineProvider({
+      clientId: process.env.LINE_CHANNEL_ID ?? '',
+      clientSecret: process.env.LINE_CHANNEL_SECRET ?? ''
     })
   ],
   callbacks: {

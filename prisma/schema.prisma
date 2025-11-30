@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -38,6 +38,8 @@ model User {
   email         String    @unique
   password      String
   name          String?
+  lineId        String?   @unique
+  avatar        String?
   role          UserRole  @default(admin)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -52,12 +54,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?   @db.LongText
-  access_token      String?   @db.LongText
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?   @db.LongText
+  id_token          String?
   session_state     String?
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

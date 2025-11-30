@@ -40,7 +40,7 @@ export function Sidebar() {
   return (
     <aside className="h-full flex flex-col bg-gradient-to-b from-blue-50 to-white border-r shadow-sm">
       <div className="px-6 py-8 text-center">
-        <Title level={4} style={{ marginBottom: 0, color: '#1677ff', fontWeight: 700 }}>Auction Admin</Title>
+        <Title level={4} style={{ marginBottom: 0, color: '#1677ff', fontWeight: 700 }}>Admin</Title>
         <span className="text-xs text-gray-400">拍賣管理系統</span>
       </div>
       <Menu
