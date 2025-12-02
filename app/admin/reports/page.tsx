@@ -45,7 +45,7 @@ export default function ReportsPage() {
               title="總營收"
               value={112893}
               precision={2}
-              styles={{ content: { color: '#3f8600' } }}
+              style={{ color: '#3f8600' }}
               prefix="$"
               suffix=""
             />
@@ -59,7 +59,7 @@ export default function ReportsPage() {
             <Statistic
               title="訂單量"
               value={320}
-              styles={{ content: { color: '#1677ff' } }}
+              style={{ color: '#1677ff' }}
             />
             <div className="flex items-center mt-2 text-green-500">
               <RiseOutlined /> <span className="ml-1">5% 較上月</span>
@@ -71,7 +71,7 @@ export default function ReportsPage() {
             <Statistic
               title="活躍用戶"
               value={85}
-              styles={{ content: { color: '#cf1322' } }}
+              style={{ color: '#cf1322' }}
             />
             <div className="flex items-center mt-2 text-red-500">
               <FallOutlined /> <span className="ml-1">2% 較上月</span>
@@ -84,7 +84,7 @@ export default function ReportsPage() {
               title="轉換率"
               value={2.4}
               precision={1}
-              styles={{ content: { color: '#722ed1' } }}
+              style={{ color: '#722ed1' }}
               suffix="%"
             />
             <div className="flex items-center mt-2 text-green-500">

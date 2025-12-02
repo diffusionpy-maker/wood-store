@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
 // 只保護 /admin 路徑
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // 取得 JWT token（session）
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = request.nextUrl;

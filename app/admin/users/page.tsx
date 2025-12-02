@@ -55,10 +55,10 @@ export default function UsersPage() {
       title: '姓名',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, entity: any) => (
+      render: (dom: React.ReactNode, entity: any) => (
         <Space>
-          <Avatar src={entity.avatar} icon={<UserOutlined />} />
-          <span className="font-medium">{text}</span>
+          <Avatar src={entity.avatar} icon={<UserOutlined />} />        
+          <span className="font-medium">{entity.name}</span>
         </Space>
       ),
     },

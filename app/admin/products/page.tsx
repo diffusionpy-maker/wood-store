@@ -73,9 +73,7 @@ export default function ProductsPage() {
             height={40}
             src={`https://via.placeholder.com/40?text=${entity.id}`}
             alt={`商品 ${entity.name}`}
-            preview={{
-              cover: <EyeOutlined />,
-            }}
+            preview={true}
             style={{ borderRadius: 4 }}
           />
           <span className="font-medium">{entity.name}</span>
@@ -170,7 +168,6 @@ export default function ProductsPage() {
 
   function onDelete(id: number) {
     notification.success({
-      title: '刪除成功',
       message: '刪除成功',
       description: `已刪除商品 #${id}（Demo 無實際刪除）`,
       placement: 'topRight',
@@ -188,7 +185,6 @@ export default function ProductsPage() {
   function handleOk() {
     form.validateFields().then((values) => {
       notification.success({
-        title: editing ? '商品已更新' : '商品已新增',
         message: editing ? '商品已更新' : '商品已新增',
         description: 'Demo操作，未實際儲存',
         placement: 'topRight',
@@ -201,7 +197,6 @@ export default function ProductsPage() {
   function batchDelete() {
     if (selectedRowKeys.length === 0) {
       notification.warning({
-        title: '提示',
         message: '請先選取要刪除的商品',
         placement: 'topRight',
       });
@@ -214,7 +209,6 @@ export default function ProductsPage() {
       cancelText: '取消',
       onOk() {
         notification.success({
-          title: '批次刪除成功',
           message: '批次刪除成功',
           description: `已刪除 ${selectedRowKeys.length} 件商品（Demo）`,
           placement: 'topRight',
@@ -268,7 +262,7 @@ export default function ProductsPage() {
                   <Statistic
                     title="總商品數"
                     value={data?.length ?? 0}
-                    styles={{ content: { fontWeight: 600 } }}
+                    style={{ fontWeight: 600 }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
@@ -298,7 +292,7 @@ export default function ProductsPage() {
                   <Statistic
                     title="總庫存"
                     value={data?.reduce((sum: number, p: any) => sum + p.stock, 0) ?? 0}
-                    styles={{ content: { fontWeight: 600 } }}
+                      style={{ fontWeight: 600 }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
@@ -328,7 +322,7 @@ export default function ProductsPage() {
                   <Statistic
                     title="缺貨商品"
                     value={data?.filter((p: any) => p.stock === 0).length ?? 0}
-                    styles={{ content: { fontWeight: 600 } }}
+                      style={{ fontWeight: 600 }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
@@ -358,7 +352,7 @@ export default function ProductsPage() {
                   <Statistic
                     title="低庫存預警"
                     value={data?.filter((p: any) => p.stock > 0 && p.stock <= 10).length ?? 0}
-                    styles={{ content: { fontWeight: 600 } }}
+                      style={{ fontWeight: 600 }}
                     formatter={(value) => (
                       <CountUp end={Number(value)} duration={1.2} separator="," />
                     )}
