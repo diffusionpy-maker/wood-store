@@ -46,17 +46,16 @@ export async function GET(req: NextRequest) {
   const profile = await profileRes.json();
 
   // Prisma 寫入資料庫
-  // 使用 lineId 作為唯一欄位
+  // 使用 oauth_line_id 作為唯一欄位
   const prisma = new PrismaClient();
-  let user = await prisma.user.findUnique({ where: { lineId: profile.userId } });
+  let user = await prisma.user.findFirst({ where: { oauth_line_id: profile.userId } });
   if (!user) {
     user = await prisma.user.create({
       data: {
-        lineId: profile.userId,
+        oauth_line_id: profile.userId,
         name: profile.displayName,
-        avatar: profile.pictureUrl,
         email: profile.email || `${profile.userId}@line.me`,
-        password: 'line_oauth_dummy_password',
+        password_hash: 'line_oauth_dummy_password',
       },
     });
   }

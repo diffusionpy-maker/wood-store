@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,144 +8,171 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  admin
-  manager
-  viewer
-}
-
-enum OrderStatus {
-  pending
-  paid
-  shipped
-  canceled
-}
-
-enum PaymentProvider {
-  ecpay
-  linepay
-}
-
-enum PaymentStatus {
-  requested
-  reserved
-  confirmed
-  failed
-  refunded
-}
-
 model User {
-  id            Int       @id @default(autoincrement())
-  email         String    @unique
-  password      String
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password_hash String
   name          String?
-  lineId        String?   @unique
-  avatar        String?
-  role          UserRole  @default(admin)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  oauth_google_id String?
+  oauth_line_id String? @unique
+  is_guest      Boolean?
+  status        String?
+  created_at    DateTime?
+  updated_at    DateTime?
+  addresses     UserAddress[]
+  favorites     Favorite[]
+  carts         Cart[]
   orders        Order[]
 }
 
-model Account {
-  id                Int       @id @default(autoincrement())
-  userId            Int
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           Int      @id @default(autoincrement())
-  sessionToken String   @unique
-  userId       Int
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+model UserAddress {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  recipient_name  String?
+  recipient_phone String?
+  address_line    String?
+  is_default      Boolean?
+  created_at      DateTime?
+  updated_at      DateTime?
+  user            User     @relation(fields: [user_id], references: [id])
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  products  Product[]
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String   @unique
+  parent_id  Int?
+  is_active  Boolean?
+  sort_order Int?
+  created_at DateTime?
+  updated_at DateTime?
+  parent     Category? @relation("CategoryParent", fields: [parent_id], references: [id])
+  children   Category[] @relation("CategoryParent")
+  products   Product[]
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  name        String
-  slug        String    @unique
-  price       Decimal   @db.Decimal(10, 2)
-  description String?
-  image       String?
-  isActive    Boolean   @default(true)
-  categoryId  Int
-  stock       Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  category    Category  @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
+  id             Int      @id @default(autoincrement())
+  name           String
+  slug           String   @unique
+  category_id    Int?
+  description    String?
+  material       String?
+  price          Int
+  stock_quantity Int?
+  is_active      Boolean?
+  is_featured    Boolean?
+  created_at     DateTime?
+  updated_at     DateTime?
+  category    Category? @relation(fields: [category_id], references: [id])
+  images         ProductImage[]
+  favorites      Favorite[]
+  cart_items     CartItem[]
+  order_items    OrderItem[]
+}
+
+model ProductImage {
+  id         Int      @id @default(autoincrement())
+  product_id Int
+  image_url  String
+  alt_text   String?
+  sort_order Int?
+  created_at DateTime?
+  product    Product  @relation(fields: [product_id], references: [id])
+}
+
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  product_id Int
+  created_at DateTime?
+  user       User     @relation(fields: [user_id], references: [id])
+  product    Product  @relation(fields: [product_id], references: [id])
+}
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  session_id String?
+  created_at DateTime?
+  updated_at DateTime?
+  user       User     @relation(fields: [user_id], references: [id])
+  items      CartItem[]
+}
+
+model CartItem {
+  id         Int      @id @default(autoincrement())
+  cart_id    Int
+  product_id Int
+  quantity   Int
+  unit_price Int
+  created_at DateTime?
+  updated_at DateTime?
+  cart       Cart     @relation(fields: [cart_id], references: [id])
+  product    Product  @relation(fields: [product_id], references: [id])
 }
 
 model Order {
-  id             Int           @id @default(autoincrement())
-  orderNumber    String        @unique
-  userId         Int
-  customerName   String
-  customerEmail  String
-  customerPhone  String?
-  totalPrice     Decimal       @db.Decimal(10, 2)
-  status         OrderStatus   @default(pending)
-  paymentStatus  PaymentStatus @default(requested)
-  paymentProvider PaymentProvider?
-  paymentLogs    PaymentLog[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  items          OrderItem[]
-  user           User          @relation(fields: [userId], references: [id])
+  id               Int      @id @default(autoincrement())
+  order_number     String   @unique
+  user_id          Int
+  status           String?
+  payment_status   String?
+  payment_method   String?
+  total_amount     Int?
+  shipping_fee     Int?
+  recipient_name   String?
+  recipient_phone  String?
+  shipping_address String?
+  shipping_type    String?
+  notes            String?
+  placed_at        DateTime?
+  paid_at          DateTime?
+  shipped_at       DateTime?
+  completed_at     DateTime?
+  cancelled_at     DateTime?
+  created_at       DateTime?
+  updated_at       DateTime?
+  user             User     @relation(fields: [user_id], references: [id])
+  items            OrderItem[]
+  payments         Payment[]
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  order     Order    @relation(fields: [orderId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  id              Int      @id @default(autoincrement())
+  order_id        Int
+  product_id      Int
+  product_name    String?
+  unit_price      Int
+  quantity        Int
+  subtotal_amount Int?
+  created_at      DateTime?
+  order           Order    @relation(fields: [order_id], references: [id])
+  product         Product  @relation(fields: [product_id], references: [id])
 }
 
-model PaymentLog {
-  id           Int             @id @default(autoincrement())
-  orderId      Int
-  provider     PaymentProvider
-  status       PaymentStatus
-  rawRequest   Json
-  rawResponse  Json?
-  message      String?
-  createdAt    DateTime         @default(now())
-  order        Order            @relation(fields: [orderId], references: [id])
+model Payment {
+  id             Int      @id @default(autoincrement())
+  order_id       Int
+  gateway        String?
+  transaction_id String?
+  amount         Int?
+  currency       String?
+  status         String?
+  paid_at        DateTime?
+  raw_response   String?
+  created_at     DateTime?
+  updated_at     DateTime?
+  order          Order    @relation(fields: [order_id], references: [id])
+}
+
+model AdminUser {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password_hash String?
+  name       String?
+  role       String?
+  status     String?
+  created_at DateTime?
+  updated_at DateTime?
 }

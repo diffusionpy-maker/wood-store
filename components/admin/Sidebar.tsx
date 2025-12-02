@@ -45,7 +45,7 @@ export function Sidebar() {
       </div>
       <Menu
         mode="inline"
-        selectedKeys={[pathname]}
+        selectedKeys={pathname ? [pathname] : []}
         items={items}
         style={{ flex: 1, borderRight: 0, background: 'transparent', fontSize: 16 }}
       />
