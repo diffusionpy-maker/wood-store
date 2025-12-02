@@ -14,7 +14,7 @@ model User {
   password_hash String
   name          String?
   oauth_google_id String?
-  oauth_line_id String?
+  oauth_line_id String? @unique
   is_guest      Boolean?
   status        String?
   created_at    DateTime?

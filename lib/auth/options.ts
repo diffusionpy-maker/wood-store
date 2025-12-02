@@ -37,11 +37,11 @@ export const authOptions: NextAuthOptions = {
           where: { email: parsed.data.email }
         });
 
-        if (!user || !user.password) {
+        if (!user || !user.password_hash) {
           return null;
         }
 
-        const isValid = await bcrypt.compare(parsed.data.password, user.password);
+        const isValid = await bcrypt.compare(parsed.data.password, user.password_hash);
         if (!isValid) {
           return null;
         }
@@ -50,7 +50,6 @@ export const authOptions: NextAuthOptions = {
           id: String(user.id),
           email: user.email,
           name: user.name ?? user.email,
-          role: user.role
         } as unknown as any;
       }
     }),
