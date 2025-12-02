@@ -21,8 +21,7 @@ async function main() {
     update: {},
     create: {
       email: 'admin@example.com',
-      password: adminPassword,
-      role: 'admin',
+      password_hash: adminPassword,
       name: 'Admin User',
     },
   });
@@ -31,8 +30,7 @@ async function main() {
     update: {},
     create: {
       email: 'manager@example.com',
-      password: managerPassword,
-      role: 'manager',
+      password_hash: managerPassword,
       name: 'Manager User',
     },
   });
@@ -41,8 +39,7 @@ async function main() {
     update: {},
     create: {
       email: 'viewer@example.com',
-      password: viewerPassword,
-      role: 'viewer',
+      password_hash: viewerPassword,
       name: 'Viewer User',
     },
   });
@@ -72,8 +69,8 @@ async function main() {
         slug: 'smartphone-pro',
         price: 32990,
         description: 'Flagship smartphone with auction-ready packaging.',
-        stock: 25,
-        categoryId: electronics.id,
+        stock_quantity: 25,
+        category_id: electronics.id,
       },
     });
   }
