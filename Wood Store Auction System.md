@@ -172,11 +172,12 @@
 
 ```prisma
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  role      String   @default("admin")
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  name           String?
+  email          String?  @unique
+  emailVerified  DateTime?
+  image          String?
+  password_hash  String?
 }
 
 model Category {

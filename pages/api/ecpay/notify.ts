@@ -1,7 +1,12 @@
 // 綠界付款完成通知 API
-const crypto = require('crypto');
+import type { NextApiRequest, NextApiResponse } from 'next';
+import crypto from 'crypto';
 
-function genCheckMacValue(params, HashKey, HashIV) {
+function genCheckMacValue(
+  params: Record<string, string | number | undefined>,
+  HashKey: string = '',
+  HashIV: string = ''
+): string {
   const keys = Object.keys(params).sort();
   let raw = '';
   keys.forEach((key) => {
@@ -19,14 +24,18 @@ function genCheckMacValue(params, HashKey, HashIV) {
   return hash;
 }
 
-export default function handler(req, res) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.status(405).end('Method Not Allowed');
     return;
   }
-  const body = req.body;
+  const body = req.body as Record<string, any>;
   // 驗證 CheckMacValue
-  const checkMac = genCheckMacValue(body, process.env.ECPAY_HASH_KEY, process.env.ECPAY_HASH_IV);
+  const checkMac = genCheckMacValue(
+    body,
+    process.env.ECPAY_HASH_KEY || '',
+    process.env.ECPAY_HASH_IV || ''
+  );
   if (body.CheckMacValue !== checkMac) {
     res.status(400).send('CheckMacValue Error');
     return;

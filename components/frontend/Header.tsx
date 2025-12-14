@@ -145,20 +145,26 @@ export default function Header() {
 
                       {/* Menu Items */}
                       <div className="p-2 space-y-1">
-                        <MenuLink href="/member" icon={<User className="w-4 h-4" />} label="會員中心" />
-                        <MenuLink href="/orders" icon={<ShoppingCart className="w-4 h-4" />} label="訂單紀錄" />
-                        <MenuLink href="/favorites" icon={<Heart className="w-4 h-4" />} label="我的收藏" />
-                        <MenuLink href="/notifications" icon={<Bell className="w-4 h-4" />} label="通知中心" />
+                        {session ? (
+                          <>
+                            <MenuLink href="/member" icon={<User className="w-4 h-4" />} label="會員中心" />
+                            <MenuLink href="/orders" icon={<ShoppingCart className="w-4 h-4" />} label="訂單紀錄" />
+                            <MenuLink href="/favorites" icon={<Heart className="w-4 h-4" />} label="我的收藏" />
+                            <MenuLink href="/notifications" icon={<Bell className="w-4 h-4" />} label="通知中心" />
 
-                        <div className="my-2 border-t border-gray-100 mx-2"></div>
+                            <div className="my-2 border-t border-gray-100 mx-2"></div>
 
-                        <button
-                          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors group text-left text-sm font-medium"
-                          onClick={() => setShowLogout(true)}
-                        >
-                          <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                          登出帳號
-                        </button>
+                            <button
+                              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors group text-left text-sm font-medium"
+                              onClick={() => setShowLogout(true)}
+                            >
+                              <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                              登出帳號
+                            </button>
+                          </>
+                        ) : (
+                          <MenuLink href="/login" icon={<User className="w-4 h-4" />} label="登入" />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -204,14 +210,9 @@ export default function Header() {
       {/* Spacer for fixed header */}
       <div className="h-24"></div>
 
-      {showLogout && (
-        <LogoutDialog
-          onConfirm={() => {
-            setShowLogout(false);
-            window.location.href = "/";
-          }}
-        />
-      )}
+{showLogout && (
+  <LogoutDialog onClose={() => setShowLogout(false)} />
+)}
     </>
   );
 }

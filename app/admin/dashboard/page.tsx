@@ -11,6 +11,7 @@ import {
   Tabs,
   Collapse,
   theme,
+  Alert,
 } from 'antd';
 import ProSkeleton from '@ant-design/pro-skeleton';
 import {
@@ -57,7 +58,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function DashboardPage() {
-  const { data, isLoading } = useSWR('/api/mock/dashboard', fetcher);
+  const { data, isLoading } = useSWR('/api/admin/dashboard', fetcher);
   const [selected, setSelected] = useState<string | null>(null);
   const { token } = theme.useToken();
 
@@ -162,6 +163,16 @@ export default function DashboardPage() {
         </Title>
         <Text type="secondary">歡迎回到管理後台，這是今天的營運概況。</Text>
       </div>
+
+      {(!data || !data.todayOrders) && !isLoading && (
+        <Alert
+          message="⚠️ 現在不是真實資料"
+          description="目前無法從數據庫取得儀表板資料，顯示的是演示數據。"
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {isLoading ? (
         <ProSkeleton type="result" active />

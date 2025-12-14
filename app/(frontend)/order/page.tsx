@@ -10,6 +10,7 @@ const products = [
 
 export default function OrderPage() {
   const [selected, setSelected] = useState<string | null>(null);
+  const [selectedPay, setSelectedPay] = useState<'ecpay' | 'linepay'>('ecpay');
   const product = products.find((p) => p.id === selected);
 
   // 綠界付款流程
@@ -29,9 +30,26 @@ export default function OrderPage() {
     }
   };
 
+  // LinePay 付款流程
+  const handleLinePay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!product) return;
+    const res = await fetch("/api/linepay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: product.id, amount: product.price, productName: product.name }),
+    });
+    const data = await res.json();
+    if (data.paymentUrl) {
+      window.open(data.paymentUrl, "_blank");
+    } else {
+      alert("LinePay 付款失敗：" + (data.error || "未知錯誤"));
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <div className="min-h-screen bg-gray-50 py-6">
+      <div className="container mx-auto px-2 max-w-3xl">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">訂購流程</h1>
           <p className="text-gray-500">簡單三步驟，輕鬆完成訂購</p>
@@ -43,12 +61,12 @@ export default function OrderPage() {
           <StepConnector active={!!selected} />
           <Step number={2} title="確認訂單" active={!!selected && !!product} completed={false} />
           <StepConnector active={false} />
-          <Step number={3} title="綠界付款" active={false} completed={false} />
+          <Step number={3} title="選擇付款" active={false} completed={false} />
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-500">
           {!selected ? (
-            <div className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-emerald-600" />
                 請選擇您要的商品
@@ -73,7 +91,8 @@ export default function OrderPage() {
               </div>
             </div>
           ) : (
-            <div className="p-8 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="p-5 animate-in fade-in slide-in-from-right-4 duration-500">
+
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                   <Check className="w-5 h-5 text-emerald-600" />
@@ -91,16 +110,60 @@ export default function OrderPage() {
                 </div>
               </div>
 
-              <form className="space-y-4" onSubmit={handleEcpay}>
+              {/* UX: 左右選擇付款方式按鈕 */}
+              <div className="flex justify-center gap-3 mb-3">
                 <button
-                  type="submit"
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg shadow-lg shadow-emerald-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group"
+                  type="button"
+                  className={`flex-1 py-3 rounded-xl border-2 flex items-center justify-center gap-2 font-bold text-base transition-all duration-200 relative
+                    ${selectedPay === 'ecpay' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' : 'bg-white border-gray-200 text-emerald-600 hover:bg-emerald-50'}`}
+                  onClick={() => setSelectedPay('ecpay')}
                 >
-                  <CreditCard className="w-5 h-5" />
-                  前往綠界付款
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {selectedPay === 'ecpay' && (
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-1 border border-emerald-600"><Check className="w-4 h-4 text-emerald-600" /></span>
+                  )}
+                  <CreditCard className="w-5 h-5" /> 綠界付款
                 </button>
-              </form>
+                <button
+                  type="button"
+                  className={`flex-1 py-3 rounded-xl border-2 flex items-center justify-center gap-2 font-bold text-base transition-all duration-200 relative
+                    ${selectedPay === 'linepay' ? 'bg-green-500 border-green-500 text-white shadow-lg' : 'bg-white border-gray-200 text-green-600 hover:bg-green-50'}`}
+                  onClick={() => setSelectedPay('linepay')}
+                >
+                  {selectedPay === 'linepay' && (
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-1 border border-green-500"><Check className="w-4 h-4 text-green-500" /></span>
+                  )}
+                  <CreditCard className="w-5 h-5" /> LinePay
+                </button>
+              </div>
+              <div className="text-center text-xs text-gray-500 mb-4">
+                {selectedPay === 'ecpay' ? '已選擇「綠界付款」，請按下方按鈕完成付款' : '已選擇「LinePay」，請按下方按鈕完成付款'}
+              </div>
+
+              {/* 根據選擇顯示對應付款表單 */}
+              {selectedPay === 'ecpay' && (
+                <form className="space-y-4" onSubmit={handleEcpay}>
+                  <button
+                    type="submit"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg shadow-lg shadow-emerald-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group"
+                  >
+                    <CreditCard className="w-5 h-5" />
+                    前往綠界付款
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </form>
+              )}
+              {selectedPay === 'linepay' && (
+                <form className="space-y-4" onSubmit={handleLinePay}>
+                  <button
+                    type="submit"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-green-400 to-lime-500 text-white font-bold text-lg shadow-lg shadow-lime-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group"
+                  >
+                    <CreditCard className="w-5 h-5" />
+                    前往 LinePay 付款
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </form>
+              )}
 
               <button
                 className="mt-4 w-full py-3 rounded-xl text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-700 transition-colors"

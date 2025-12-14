@@ -10,6 +10,7 @@ import {
   Space,
   Modal,
   Upload,
+  Alert,
 } from 'antd';
 import { Card, Table, Skeleton } from 'antd';
 import { useState, useRef, useEffect } from 'react';
@@ -41,7 +42,7 @@ const statusTextMap: Record<string, string> = {
 };
 
 export default function PaymentsPage() {
-  const { data, isLoading } = useSWR('/api/mock/payments', fetcher);
+  const { data, isLoading } = useSWR('/api/admin/payments', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
