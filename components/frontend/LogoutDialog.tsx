@@ -1,19 +1,15 @@
 "use client";
-import { useState } from "react";
+import React from "react";
 import { signOut } from "next-auth/react";
-import { LogOut, AlertCircle } from "lucide-react";
+import { LogOut } from "lucide-react";
 
-export default function LogoutDialog({ onConfirm }: { onConfirm: () => void }) {
-  const [open, setOpen] = useState(true);
-
-  if (!open) return null;
-
+export default function LogoutDialog({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop with blur */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-in fade-in duration-300"
-        onClick={() => setOpen(false)}
+        onClick={onClose}
       />
 
       {/* Dialog Content */}
@@ -33,16 +29,14 @@ export default function LogoutDialog({ onConfirm }: { onConfirm: () => void }) {
         <div className="flex gap-3 justify-center">
           <button
             className="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 font-semibold hover:bg-gray-200 transition-all duration-200"
-            onClick={() => setOpen(false)}
+            onClick={onClose}
           >
             取消
           </button>
           <button
             className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 shadow-lg shadow-red-200 hover:shadow-red-300 transition-all duration-200"
             onClick={() => {
-              setOpen(false);
               signOut({ callbackUrl: "/" });
-              onConfirm();
             }}
           >
             確認登出

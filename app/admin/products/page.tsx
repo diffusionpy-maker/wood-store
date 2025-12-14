@@ -23,6 +23,7 @@ import {
   Upload,
   Card,
   ConfigProvider,
+  Alert,
 } from 'antd';
 import zhTW from 'antd/es/locale/zh_TW';
 // ProCard 已移除，改用 antd Card
@@ -45,7 +46,7 @@ const { Title } = Typography;
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ProductsPage() {
-  const { data, isLoading } = useSWR('/api/mock/products', fetcher);
+  const { data, isLoading } = useSWR('/api/admin/products', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any | null>(null);
   const [form] = Form.useForm();
