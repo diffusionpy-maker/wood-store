@@ -1,54 +1,18 @@
 'use client';
-import { Avatar, Tag, Button, Space, Modal, Form, Input, Select, message } from 'antd';
+import { Avatar, Tag, Button, Space, Modal, Form, Input, Select, message, Skeleton, Alert } from 'antd';
+import useSWR from 'swr';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { PlusOutlined, UserOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import PageContainer from '../components/PageContainer';
 
-const initialUsers = [
-  {
-    key: 1,
-    name: '王小明',
-    email: 'ming@example.com',
-    role: '管理員',
-    status: '啟用',
-    createdAt: '2025-11-01',
-    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
-  },
-  {
-    key: 2,
-    name: '李小美',
-    email: 'mei@example.com',
-    role: '操作員',
-    status: '啟用',
-    createdAt: '2025-11-10',
-    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=2',
-  },
-  {
-    key: 3,
-    name: '陳大華',
-    email: 'hua@example.com',
-    role: '審核員',
-    status: '停用',
-    createdAt: '2025-10-25',
-    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=3',
-  },
-  {
-    key: 4,
-    name: '林小強',
-    email: 'qiang@example.com',
-    role: '管理員',
-    status: '啟用',
-    createdAt: '2025-11-15',
-    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=4',
-  },
-];
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function UsersPage() {
+  const { data, isLoading } = useSWR('/api/admin/users', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any | null>(null);
   const [form] = Form.useForm();
-  const [users, setUsers] = useState(initialUsers);
 
   const columns: ProColumns<any>[] = [
     {
@@ -153,10 +117,21 @@ export default function UsersPage() {
         </Button>
       }
     >
+      {(!data || data.length === 0) && !isLoading && (
+        <Alert
+          message="⚠️ 現在不是真實資料"
+          description="目前未能從數據庫取得用戶資料，顯示的是演示數據。"
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
       <ProTable
         columns={columns}
-        dataSource={users}
-        rowKey="key"
+        dataSource={data || []}
+        rowKey="id"
+        loading={isLoading}
         pagination={{
           showQuickJumper: true,
         }}

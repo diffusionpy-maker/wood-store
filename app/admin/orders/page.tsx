@@ -17,6 +17,7 @@ import {
   Tooltip,
   Card,
   Upload,
+  Alert,
 } from 'antd';
 import { Table, Skeleton } from 'antd';
 import { useState, useRef } from 'react';
@@ -55,7 +56,7 @@ const statusTextMap: Record<string, string> = {
 };
 
 export default function OrdersPage() {
-  const { data, isLoading } = useSWR('/api/mock/orders', fetcher);
+  const { data, isLoading } = useSWR('/api/admin/orders', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
@@ -183,6 +184,16 @@ export default function OrdersPage() {
         </Title>
         <span style={{ color: '#888' }}>管理訂單資訊，支援詳情、狀態修改、多維度統計</span>
       </Card>
+
+      {(!data || data.length === 0) && !isLoading && (
+        <Alert
+          message="⚠️ 現在不是真實資料"
+          description="目前未能從數據庫取得訂單資料，顯示的是演示數據。"
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {/* 骨架屏 loading 效果 */}
       {isLoading ? (

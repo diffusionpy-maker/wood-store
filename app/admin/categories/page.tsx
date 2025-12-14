@@ -1,6 +1,6 @@
 'use client';
 import useSWR from 'swr';
-import { Typography, Modal, Form, Input, message, Button, Space, Popconfirm, Row, Col, Statistic, Tag } from 'antd';
+import { Typography, Modal, Form, Input, message, Button, Space, Popconfirm, Row, Col, Statistic, Tag, Alert } from 'antd';
 import { Card, Table } from 'antd';
 import { useState, useRef } from 'react';
 import { EditOutlined, DeleteOutlined, PlusOutlined, AppstoreOutlined, CheckSquareOutlined, ThunderboltOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ const { Title } = Typography;
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function CategoriesPage() {
-  const { data, isLoading } = useSWR('/api/mock/categories', fetcher);
+  const { data, isLoading } = useSWR('/api/admin/categories', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any | null>(null);
   const [form] = Form.useForm();
@@ -144,6 +144,16 @@ export default function CategoriesPage() {
           </Card>
         </Col>
       </Row>
+
+      {(!data || data.length === 0) && !isLoading && (
+        <Alert
+          message="⚠️ 現在不是真實資料"
+          description="目前未能從數據庫取得分類資料，顯示的是演示數據。"
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <Table
         rowKey="id"

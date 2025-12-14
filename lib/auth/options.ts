@@ -62,6 +62,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.LINE_CHANNEL_SECRET ?? ''
     })
   ],
+  // callbacks: {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

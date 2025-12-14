@@ -1,8 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Lock, Loader2, LogIn, ArrowRight, Check } from 'lucide-react';
-import LineLoginButton from '@/components/auth/LineLoginButton';
+import { Mail, Lock, Loader2, ArrowRight, Check } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
@@ -245,10 +244,22 @@ function LoginFormContent() {
                 </svg>
                 Google
               </Button>
-              {/* LINE Login Button Wrapper to match style */}
-              <div className="h-12 [&>button]:h-full [&>button]:w-full [&>button]:rounded-xl [&>button]:shadow-none [&>button]:border [&>button]:border-[#06C755] [&>button]:bg-[#06C755] [&>button]:text-white [&>button]:hover:bg-[#05b34c] [&>button]:transition-all">
-                <LineLoginButton />
-              </div>
+              <Button
+                type="button"
+                className="h-12 w-full rounded-xl shadow-none border border-[#06C755] bg-[#06C755] text-white hover:bg-[#05b34c] transition-all flex items-center justify-center"
+                onClick={() => signIn('line', { callbackUrl: '/' })}
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  viewBox="0 0 36 36"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="36" height="36" rx="8" fill="#06C755" />
+                  <path d="M18 8C11.9249 8 7 11.9249 7 16.5C7 19.2222 8.85714 21.6111 11.7143 23.0556L10.8571 26.2222C10.7143 26.6667 11.1429 27.0556 11.5714 26.8889L15.2857 25.3333C16.1429 25.4444 17.0714 25.5 18 25.5C24.0751 25.5 29 21.5751 29 17C29 12.4249 24.0751 8 18 8Z" fill="white"/>
+                </svg>
+                LINE
+              </Button>
             </div>
           </div>
         </div>

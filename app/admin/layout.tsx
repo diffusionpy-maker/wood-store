@@ -96,12 +96,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         actionsRender={(props) => {
           if (props.isMobile) return [];
           return [
-            <Input.Search
-              key="search"
-              placeholder="搜尋..."
-              style={{ width: 200, marginLeft: 8 }}
-              onSearch={(value) => console.log(value)}
-            />,
+            <Space key="search-space" size="small">
+              <Input
+                placeholder="搜尋..."
+                style={{ width: 200 }}
+                prefix={<SearchOutlined />}
+                onPressEnter={(e) => console.log(e.currentTarget.value)}
+              />
+            </Space>,
             <QuestionCircleOutlined key="QuestionCircleOutlined" />,
             <Badge count={5} size="small" key="notification">
               <BellOutlined style={{ fontSize: 16 }} />
