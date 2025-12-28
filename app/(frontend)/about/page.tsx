@@ -1,74 +1,105 @@
-import { Leaf, Heart, PenTool } from "lucide-react";
+"use client";
+
+import { Leaf, Recycle, Users, Sprout, Sparkles } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function AboutPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-background min-h-screen text-foreground overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-emerald-50/50"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <section className="relative py-32 md:py-48 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] animate-pulse duration-[5000ms]" />
+        </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-              關於 <span className="text-emerald-600">木栖所</span>
-            </h1>
-            <p className="text-xl text-gray-500 leading-relaxed">
-              致力於推廣木作美學，結合設計、職人精神與現代科技，
-              <br />
-              讓每一件商品都蘊含溫度與故事。
-            </p>
+        <ScrollReveal>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-background/50 backdrop-blur-sm mb-8">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-muted-foreground tracking-widest">BRAND STORY</span>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-8">
+            We are <span className="font-medium text-primary">MuQi.</span>
+          </h1>
+        </ScrollReveal>
+        <ScrollReveal delay={0.2}>
+          <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto leading-relaxed">
+            我們相信，好的設計不應只是視覺的享受，<br />
+            更是生活中溫柔的陪伴。
+          </p>
+        </ScrollReveal>
+      </section>
+
+      {/* Story Section */}
+      <section className="py-24 md:py-32 relative">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+            <ScrollReveal direction="right">
+              <div className="aspect-square rounded-[2.5rem] bg-muted/20 relative overflow-hidden group shadow-2xl shadow-primary/5">
+                <img src="/images/20251226_logo_std.png" alt="MuQi Story" className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal>
+              <div className="space-y-8">
+                <h2 className="text-3xl md:text-5xl font-light tracking-tight">源自自然的靈感</h2>
+                <div className="space-y-6 text-lg text-muted-foreground font-light leading-loose">
+                  <p>
+                    木栖所成立於 2024 年，我們的初衷很簡單：在這個繁忙的數位時代，為人們找回一絲自然的寧靜。
+                  </p>
+                  <p>
+                    每一塊木頭都有它的故事，從森林到工坊，再到您的家中。我們嚴選來自北歐與日本的永續林場木材，透過職人雙手，轉化為溫潤的日常器物。
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Content Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <FeatureCard
-              icon={<Leaf className="w-8 h-8" />}
-              title="自然素材"
-              desc="嚴選優質木材，堅持環保永續，讓自然溫暖您的生活空間。"
-            />
-            <FeatureCard
-              icon={<PenTool className="w-8 h-8" />}
-              title="職人精神"
-              desc="結合傳統工藝與現代設計，每一件作品都是匠心獨具的藝術品。"
-            />
-            <FeatureCard
-              icon={<Heart className="w-8 h-8" />}
-              title="用心服務"
-              desc="提供最貼心的諮詢與售後服務，為您打造理想的居家生活。"
-            />
-          </div>
+      {/* Values Grid */}
+      <section className="py-24 md:py-32 bg-secondary/5">
+        <div className="container mx-auto px-6">
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-5xl font-light text-center mb-20 tracking-tight">核心理念</h2>
+          </ScrollReveal>
 
-          <div className="mt-20 max-w-3xl mx-auto text-center bg-gray-50 rounded-3xl p-10 md:p-16 relative overflow-hidden">
-            <div className="relative z-10">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">我們的願景</h2>
-              <p className="text-gray-600 leading-loose text-lg">
-                透過 AI 選物、精選商品、品牌活動，木栖所希望讓更多人感受木作的美好。
-                我們相信，木頭不只是材料，更是生活的溫度與品味。
-                歡迎您加入我們的品牌旅程，一起探索木作世界的無限可能。
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <ValueCard delay={0.1} icon={<Leaf />} title="永續環保" desc="堅持使用認證環保木材，為地球的未來盡一份心力。" />
+            <ValueCard delay={0.2} icon={<Users />} title="職人精神" desc="與在地工坊合作，傳承世代相傳的精湛工藝。" />
+            <ValueCard delay={0.3} icon={<Recycle />} title="循環設計" desc="產品設計考量生命週期，致力於減少資源浪費。" />
+            <ValueCard delay={0.4} icon={<Sprout />} title="自然共生" desc="讓居家空間成為自然的一部分，生活即是森呼吸。" />
+          </div>
+        </div>
+      </section>
+
+      {/* Vision Section */}
+      <section className="py-32 container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-center relative">
+          <ScrollReveal delay={0.2}>
+            <div className="py-16 px-8 bg-background/50 backdrop-blur-md rounded-[3rem] border border-white/50 shadow-xl">
+              <h2 className="text-2xl md:text-3xl font-light text-foreground mb-8">我們的願景</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-light italic">
+                "透過 AI 選物、精選商品、品牌活動，<br />木栖所希望讓更多人感受木作的美好，<br />一起探索木作世界的無限可能。"
               </p>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function ValueCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: string, desc: string, delay: number }) {
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group">
-      <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 transition-transform duration-300">
-        {icon}
+    <ScrollReveal delay={delay} className="group h-full">
+      <div className="bg-background/50 backdrop-blur-md border border-white/40 p-10 rounded-[2rem] h-full transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2">
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+          {icon}
+        </div>
+        <h3 className="text-xl font-medium mb-3">{title}</h3>
+        <p className="text-muted-foreground font-light leading-relaxed">
+          {desc}
+        </p>
       </div>
-      <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">
-        {desc}
-      </p>
-    </div>
+    </ScrollReveal>
   );
 }

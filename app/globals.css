@@ -109,8 +109,17 @@
         @apply border-border;
     }
 
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply tracking-tight font-medium;
+    }
+
     body {
-        @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+        @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary leading-relaxed;
         font-feature-settings: "ss01", "ss02", "cv01", "cv02";
         /* Modern font features if supported */
     }

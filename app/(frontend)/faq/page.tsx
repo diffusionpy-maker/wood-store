@@ -1,83 +1,77 @@
 "use client";
-import { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
 
-const faqs = [
-  {
-    q: "如何購買木栖所商品？",
-    a: "請於精選商品頁面選擇您喜愛的商品，加入購物車後依照步驟完成結帳流程。我們支援多種付款方式，包括信用卡、ATM 轉帳等。"
-  },
-  {
-    q: "AI選物是什麼？",
-    a: "AI選物是我們獨家開發的智能推薦系統，會根據您的居家風格偏好、預算以及空間大小，為您推薦最適合的木作商品組合，讓選購變得更輕鬆。"
-  },
-  {
-    q: "運費如何計算？",
-    a: "全館消費滿 NT$ 2,000 即享免運優惠。未滿免運門檻，宅配運費為 NT$ 100，超商取貨運費為 NT$ 60。"
-  },
-  {
-    q: "收到商品後可以退換貨嗎？",
-    a: "我們提供 7 天鑑賞期服務。若商品有瑕疵或不符合預期，請保持商品完整包裝，並於收到商品 7 天內聯繫客服辦理退換貨。"
-  },
-  {
-    q: "如何聯絡客服？",
-    a: "您可至「聯絡客服」頁面填寫表單，或直接來信 service@muqiselect.com，我們將於工作日 24 小時內回覆您的問題。"
-  }
-];
+import { MessageCircle, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-export default function FaqPage() {
+export default function FAQPage() {
+  const faqs = [
+    { q: "木製家具需要特別保養嗎？", a: "是的，建議每季使用天然護木油保養一次，並避免陽光直射與極度潮濕的環境。" },
+    { q: "運送範圍包含離島嗎？", a: "目前運送範圍僅限台灣本島，離島地區請洽詢客服安排特殊配送。" },
+    { q: "商品有保固嗎？", a: "大型家具皆享有 5 年結構保固，部分家飾品享有 1 年保固。" },
+    { q: "可以訂製尺寸嗎？", a: "部分實木家具提供客製化服務，請參考商品頁面說明或與我們聯繫。" },
+    { q: "退換貨政策為何？", a: "享有 7 天鑑賞期。若商品有瑕疵，請於收到貨後 3 日內反應，我們將免費更換。" },
+    { q: "如何購買木栖所商品？", a: "請於精選商品頁面選擇您喜愛的商品，加入購物車後依照步驟完成結帳流程。我們支援多種付款方式，包括信用卡、ATM 轉帳等。" },
+    { q: "AI選物是什麼？", a: "AI選物是我們獨家開發的智能推薦系統，會根據您的居家風格偏好、預算以及空間大小，為您推薦最適合的木作商品組合，讓選購變得更輕鬆。" },
+    { q: "運費如何計算？", a: "全館消費滿 NT$ 2,000 即享免運優惠。未滿免運門檻，宅配運費為 NT$ 100，超商取貨運費為 NT$ 60。" }
+  ];
+
   return (
-    <div className="bg-white min-h-screen">
-      <section className="py-20 bg-emerald-50/50">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">常見問題</h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            這裡整理了大家最常問的問題，希望能為您解答疑惑。
+    <div className="bg-background min-h-screen py-32 px-4 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+
+<section className="relative py-32 md:py-48 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+        <ScrollReveal className="text-center mb-16">
+          
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-background/50 backdrop-blur-sm mb-8">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-muted-foreground tracking-widest">FAQ</span>
+
+            </div>
+          
+          <h1 className="text-4xl md:text-5xl font-light tracking-tight text-foreground mb-6">
+            Frequently Asked <span className="text-primary font-normal">Questions</span>
+          </h1>
+          <p className="text-muted-foreground font-light max-w-lg mx-auto">
+            關於產品保養、運送與售後服務的常見問題。
           </p>
-        </div>
-      </section>
+        </ScrollReveal>
+</section>
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto space-y-4">
+      <div className="container mx-auto max-w-3xl relative z-10">
+        
+
+        <Accordion type="single" collapsible className="w-full space-y-4">
           {faqs.map((faq, index) => (
-            <FaqItem key={index} question={faq.q} answer={faq.a} />
+            <ScrollReveal key={index} delay={index * 0.05}>
+              <AccordionItem value={`item-${index}`} className="border border-border/50 rounded-2xl px-6 bg-white/40 backdrop-blur-sm data-[state=open]:bg-white/60 data-[state=open]:shadow-md transition-all duration-300">
+                <AccordionTrigger className="text-lg font-medium hover:no-underline py-6">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground font-light text-base leading-relaxed pb-6">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            </ScrollReveal>
           ))}
-        </div>
+        </Accordion>
 
-        <div className="mt-16 text-center">
-          <p className="text-gray-500 mb-4">找不到您要的答案嗎？</p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-full text-gray-700 font-medium hover:border-emerald-500 hover:text-emerald-600 transition-all duration-300 shadow-sm hover:shadow-md"
-          >
-            <HelpCircle className="w-5 h-5" />
-            聯繫客服中心
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white transition-all duration-300 hover:border-emerald-200 hover:shadow-md">
-      <button
-        className="w-full px-6 py-5 flex items-center justify-between text-left bg-white hover:bg-gray-50 transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className="font-bold text-gray-800 text-lg">{question}</span>
-        <ChevronDown
-          className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald-500' : ''}`}
-        />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
-      >
-        <div className="px-6 pb-6 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
-          {answer}
+        <div className="mt-20 pt-10 border-t border-border/50 text-center">
+          <p className="text-muted-foreground mb-6 font-light">找不到您要的答案嗎？</p>
+          <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/20 hover:scale-[1.02] gap-2">
+            <Link href="/contact">
+              <MessageCircle className="w-4 h-4" />
+              聯繫客服中心
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

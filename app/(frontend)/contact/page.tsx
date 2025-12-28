@@ -1,108 +1,113 @@
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+"use client";
+
+import { Mail, MapPin, Phone, Send, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate submission
+    setTimeout(() => setSuccess(true), 1000);
+  };
+
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <section className="relative py-20 bg-emerald-50/50">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">聯絡客服</h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            有任何問題或建議，歡迎填寫下方表單或直接來信，我們將盡快回覆您！
-          </p>
-        </div>
-      </section>
+    <div className="bg-background min-h-screen relative overflow-hidden flex items-center justify-center py-20 px-4 selection:bg-primary/20">
+      {/* Ambient Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-primary/5 rounded-full blur-[100px] animate-pulse duration-[7000ms]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-muted/20 rounded-full blur-[100px]" />
+      </div>
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">聯絡資訊</h2>
-              <div className="space-y-6">
-                <ContactItem
-                  icon={<MapPin className="w-6 h-6" />}
-                  title="公司地址"
-                  content="台北市信義區信義路五段7號 (台北101)"
-                />
-                <ContactItem
-                  icon={<Phone className="w-6 h-6" />}
-                  title="客服專線"
-                  content="(02) 2345-6789"
-                />
-                <ContactItem
-                  icon={<Mail className="w-6 h-6" />}
-                  title="電子信箱"
-                  content="service@muqiselect.com"
-                />
-              </div>
-            </div>
+      <div className="container mx-auto max-w-5xl relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            <div className="bg-gray-50 p-8 rounded-2xl">
-              <h3 className="font-bold text-gray-800 mb-2">服務時間</h3>
-              <p className="text-gray-600">
-                週一至週五 09:00 - 18:00
-                <br />
-                (國定假日暫停服務)
-              </p>
-            </div>
-          </div>
+        {/* Contact Info */}
+        <div className="space-y-10">
+          <ScrollReveal>
+            <h1 className="text-4xl md:text-6xl font-light tracking-tight text-foreground">
+              Get in <span className="font-serif italic text-primary">Touch.</span>
+            </h1>
+            <p className="text-xl text-muted-foreground font-light mt-6 max-w-md leading-relaxed">
+              我們很樂意聽取您的建議，或為您的選購提供專業協助。
+            </p>
+          </ScrollReveal>
 
-          {/* Contact Form */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <form className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">您的姓名</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all outline-none"
-                  placeholder="請輸入姓名"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">電子郵件</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all outline-none"
-                  placeholder="name@example.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">訊息內容</label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all outline-none resize-none"
-                  placeholder="請輸入您的問題或建議..."
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-lg shadow-emerald-200 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group"
-              >
-                送出訊息
-                <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </form>
+          <div className="space-y-6">
+            <ContactItem delay={0.2} icon={<Mail className="w-5 h-5" />} title="Email Us" content="service@muqi-wood.com" />
+            <ContactItem delay={0.3} icon={<Phone className="w-5 h-5" />} title="Call Us" content="+886 2 1234 5678" />
+            <ContactItem delay={0.4} icon={<MapPin className="w-5 h-5" />} title="Visit Us" content="台北市信義區松高路1號 (預約制)" />
           </div>
         </div>
+
+        {/* Contact Form */}
+        <ScrollReveal direction="left" delay={0.2}>
+          <div className="bg-white/40 backdrop-blur-xl border border-white/60 p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-primary/5">
+            {success ? (
+              <div className="h-[400px] flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-bounce">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-light">Message Sent!</h3>
+                <p className="text-muted-foreground font-light">我們會盡快與您聯繫。</p>
+                <Button variant="outline" onClick={() => setSuccess(false)} className="mt-4">Send another</Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground ml-1">Name</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none"
+                    placeholder="您的稱呼"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground ml-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none"
+                    placeholder="您的 Email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground ml-1">Message</label>
+                  <textarea
+                    required
+                    rows={4}
+                    className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none resize-none"
+                    placeholder="請輸入您的訊息..."
+                  ></textarea>
+                </div>
+                <Button type="submit" size="lg" className="w-full rounded-xl text-lg h-14 font-normal shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98]">
+                  Send Message
+                </Button>
+              </form>
+            )}
+          </div>
+        </ScrollReveal>
+
       </div>
     </div>
   );
 }
 
-function ContactItem({ icon, title, content }: { icon: React.ReactNode; title: string; content: string }) {
+function ContactItem({ icon, title, content, delay }: { icon: React.ReactNode, title: string, content: string, delay: number }) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 flex-shrink-0">
+    <ScrollReveal delay={delay} className="flex items-center gap-6 group p-4 rounded-2xl hover:bg-white/40 transition-colors cursor-default">
+      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
         {icon}
       </div>
       <div>
-        <h3 className="font-bold text-gray-800 mb-1">{title}</h3>
-        <p className="text-gray-600">{content}</p>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-1">{title}</h3>
+        <p className="text-lg font-light text-foreground">{content}</p>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }

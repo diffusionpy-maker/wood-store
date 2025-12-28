@@ -4,6 +4,7 @@ import 'antd/dist/reset.css';
 import './globals.css';
 import { AntdConfigProvider } from '@/components/providers/AntdConfigProvider';
 import SessionProviderWrapper from '@/components/providers/SessionProviderWrapper';
+import { ToastNotification } from "@/components/ui/ToastNotification";
 
 const ubuntu = Ubuntu({
   subsets: ['latin'],
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProviderWrapper>
           <AntdConfigProvider>{children}</AntdConfigProvider>
         </SessionProviderWrapper>
+        <ToastNotification />
       </body>
     </html>
   );
