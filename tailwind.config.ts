@@ -10,26 +10,22 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
+				border: 'hsl(var(--border))',
+				input: 'hsl(var(--input))',
+				ring: 'hsl(var(--ring))',
+				background: 'hsl(var(--background))',
+				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
-				success: '#52c41a',
-				warning: '#faad14',
-				danger: '#ff4d4f',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
+				},
+				destructive: {
+					DEFAULT: 'hsl(var(--destructive))',
+					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
@@ -39,55 +35,92 @@ const config: Config = {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+				popover: {
+					DEFAULT: 'hsl(var(--popover))',
+					foreground: 'hsl(var(--popover-foreground))'
 				},
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
+				card: {
+					DEFAULT: 'hsl(var(--card))',
+					foreground: 'hsl(var(--card-foreground))'
+				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
 					'3': 'hsl(var(--chart-3))',
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
+				},
+				info: 'hsl(var(--info))',
+				success: 'hsl(var(--success))',
+				warning: 'hsl(var(--warning))',
+				error: 'hsl(var(--error))',
+				// MUQI Design System Specifics (Raw values for utility availability)
+				muqi: {
+					primary: '#7A6E7D',
+					secondary: {
+						1: '#F1EDEA',
+						2: '#A79EAD',
+						3: '#A47681',
+						4: '#3E252B',
+					},
+					grayLegacy: {
+						1: '#4D4652',
+						2: '#615967',
+						3: '#756D7D',
+						4: '#8A8292',
+						5: '#B5AEB8',
+						6: '#D7D1DB',
+						7: '#FBF8F8',
+					},
+				},
+				"muqi-gray": {
+					900: "#141414",
+					800: "#322F35",
+					700: "#4D4852",
+					600: "#69636E",
+					500: "#857F8B",
+					400: "#A29CA8",
+					300: "#BFBCC4",
+					200: "#D4CFDB",
+					100: "#EBE9F0",
+					50: "#F7F7F8",
 				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
-			},
-			keyframes: {
-				"scale-in": {
-					"0%": { transform: "scale(0.95)", opacity: "0" },
-					"100%": { transform: "scale(1)", opacity: "1" },
-				},
-				"fade-in": {
-					"0%": { opacity: "0" },
-					"100%": { opacity: "1" },
-				},
-				"slide-in-from-top": {
-					"0%": { transform: "translateY(-10px)", opacity: "0" },
-					"100%": { transform: "translateY(0)", opacity: "1" },
-				},
-				"bouncy-scale-in": {
-					"0%": { transform: "scale(0.8) translateY(-10px)", opacity: "0" },
-					"70%": { transform: "scale(1.05) translateY(5px)", opacity: "1" },
-					"100%": { transform: "scale(1) translateY(0)", opacity: "1" },
-				}
-			},
-			animation: {
-				"scale-in": "scale-in 0.2s ease-out",
-				"fade-in": "fade-in 0.2s ease-out",
-				"slide-in-from-top": "slide-in-from-top 0.2s ease-out",
-				"bouncy-scale-in": "bouncy-scale-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
 			}
+		},
+		fontFamily: {
+			sans: ['var(--font-ubuntu)', 'Gen Jyuu Gothic', 'sans-serif'],
+		},
+
+		keyframes: {
+			"scale-in": {
+				"0%": { transform: "scale(0.95)", opacity: "0" },
+				"100%": { transform: "scale(1)", opacity: "1" },
+			},
+			"fade-in": {
+				"0%": { opacity: "0" },
+				"100%": { opacity: "1" },
+			},
+			"slide-in-from-top": {
+				"0%": { transform: "translateY(-10px)", opacity: "0" },
+				"100%": { transform: "translateY(0)", opacity: "1" },
+			},
+			"bouncy-scale-in": {
+				"0%": { transform: "scale(0.8) translateY(-10px)", opacity: "0" },
+				"70%": { transform: "scale(1.05) translateY(5px)", opacity: "1" },
+				"100%": { transform: "scale(1) translateY(0)", opacity: "1" },
+			}
+		},
+		animation: {
+			"scale-in": "scale-in 0.2s ease-out",
+			"fade-in": "fade-in 0.2s ease-out",
+			"slide-in-from-top": "slide-in-from-top 0.2s ease-out",
+			"bouncy-scale-in": "bouncy-scale-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
 		}
-	},
-	corePlugins: {
-		preflight: false
 	},
 	plugins: [require("tailwindcss-animate")]
 };
