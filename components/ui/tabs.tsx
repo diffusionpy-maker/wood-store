@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+// Import motion from framer-motion for fluid animations
+import { motion } from "framer-motion"
 
 const Tabs = React.forwardRef<
     HTMLDivElement,
@@ -29,12 +31,12 @@ Tabs.displayName = "Tabs"
 
 const TabsList = React.forwardRef<
     HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+    React.HTMLAttributes<HTMLDivElement> & { activeTab?: string; setActiveTab?: any }
+>(({ className, activeTab, setActiveTab, ...props }, ref) => (
     <div
         ref={ref}
         className={cn(
-            "inline-flex h-10 items-center justify-start rounded-none border-b border-border bg-transparent p-0 text-muted-foreground w-full",
+            "inline-flex h-10 items-center justify-center rounded-full bg-muted/50 p-1 text-muted-foreground",
             className
         )}
         {...props}
@@ -52,16 +54,24 @@ const TabsTrigger = React.forwardRef<
             ref={ref}
             type="button"
             className={cn(
-                "inline-flex items-center justify-center whitespace-nowrap px-4 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative",
-                isActive
-                    ? "text-primary after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-primary"
-                    : "hover:text-foreground hover:bg-muted/20",
+                "relative inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 z-10",
+                isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
                 className
             )}
             onClick={() => setActiveTab?.(value)}
+            // Remove data-state in favor of explicit motion handling or keep for accessibility
+            role="tab"
+            aria-selected={isActive}
             {...props}
         >
-            {children}
+            {isActive && (
+                <motion.div
+                    layoutId="active-tab"
+                    className="absolute inset-0 z-[-1] rounded-full bg-primary shadow-sm"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+            )}
+            <span className="relative z-10">{children}</span>
         </button>
     )
 })
@@ -69,8 +79,8 @@ TabsTrigger.displayName = "TabsTrigger"
 
 const TabsContent = React.forwardRef<
     HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement> & { value: string; activeTab?: string }
->(({ className, value, activeTab, ...props }, ref) => {
+    React.HTMLAttributes<HTMLDivElement> & { value: string; activeTab?: string; setActiveTab?: any }
+>(({ className, value, activeTab, setActiveTab, ...props }, ref) => {
     if (activeTab !== value) return null;
     return (
         <div
