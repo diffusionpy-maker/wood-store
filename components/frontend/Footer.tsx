@@ -46,7 +46,7 @@ export default function Footer() {
                   <div className="relative w-full">
                     <Input
                       type="email"
-                      placeholder="輸入您的 Email"
+                      placeholder="Enter Your Email"
                       className="rounded-full h-12 pl-6 pr-4 bg-white/60 border-primary/10 focus:border-primary/40 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all w-full text-base font-light placeholder:text-muted-foreground/60 shadow-sm"
                     />
                   </div>

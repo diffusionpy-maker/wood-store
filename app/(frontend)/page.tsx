@@ -205,7 +205,7 @@ export default function FrontendHome() {
               </ScrollReveal>
               <ScrollReveal delay={0.6}>
                 <Link href="/about" className="inline-block">
-                  <Button variant="outline" size="lg" className="rounded-full px-8 h-14 border-primary/20 hover:bg-primary/5 hover:border-primary text-base font-normal tracking-wide transition-all">
+                  <Button variant="outline" size="lg" className="rounded-full px-8 h-14 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary text-base font-normal tracking-wide transition-all">
                     閱讀更多故事
                   </Button>
                 </Link>

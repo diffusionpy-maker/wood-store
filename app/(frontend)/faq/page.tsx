@@ -30,12 +30,10 @@ export default function FAQPage() {
 
 <section className="relative py-32 md:py-48 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
         <ScrollReveal className="text-center mb-16">
-          
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-background/50 backdrop-blur-sm mb-8">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-muted-foreground tracking-widest">FAQ</span>
-
-            </div>
+          <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full border border-primary/10 bg-white/60 backdrop-blur-xl mb-12 shadow-sm hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 hover:scale-105 cursor-default group">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-xs font-semibold text-primary/80 tracking-[0.25em] uppercase group-hover:tracking-[0.35em] transition-all duration-500">FAQ</span>
+          </div>
           
           <h1 className="text-4xl md:text-5xl font-light tracking-tight text-foreground mb-6">
             Frequently Asked <span className="text-primary font-normal">Questions</span>

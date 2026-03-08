@@ -64,7 +64,7 @@ export default function ContactPage() {
                     type="text"
                     required
                     className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none"
-                    placeholder="您的稱呼"
+                    placeholder="Your Name"
                   />
                 </div>
                 <div className="space-y-2">
@@ -73,7 +73,7 @@ export default function ContactPage() {
                     type="email"
                     required
                     className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none"
-                    placeholder="您的 Email"
+                    placeholder="Your Email"
                   />
                 </div>
                 <div className="space-y-2">
@@ -82,7 +82,7 @@ export default function ContactPage() {
                     required
                     rows={4}
                     className="w-full px-6 py-4 rounded-2xl bg-white/60 border border-primary/10 focus:border-primary/20 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none resize-none"
-                    placeholder="請輸入您的訊息..."
+                    placeholder="Please enter your message..."
                   ></textarea>
                 </div>
                 <Button type="submit" size="lg" className="w-full rounded-xl text-lg h-14 font-normal shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98]">

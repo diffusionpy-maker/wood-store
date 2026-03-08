@@ -32,7 +32,7 @@ export function ProductCard({ product }: { product: Product }) {
     return (
         <div className="group relative bg-white/40 backdrop-blur-md border border-white/50 rounded-[2rem] overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2">
             {/* Image Container */}
-            <div className="aspect-[4/5] relative overflow-hidden bg-muted/20">
+            <div className="aspect-square relative overflow-hidden bg-muted/20">
                 {/* Tag */}
                 {product.tag && (
                     <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-white/80 backdrop-blur-md rounded-full text-xs font-medium text-foreground border border-white/50">

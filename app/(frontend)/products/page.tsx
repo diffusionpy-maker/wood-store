@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/frontend/ProductCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -19,6 +21,22 @@ const categories = ["All", "Furniture", "Lighting", "Lifestyle", "Decor"];
 
 export default function ProductsPage() {
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  // Filter logic (mock for now, can be expanded)
+  const filteredProducts = products; // In real app, apply category filters here
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="bg-background min-h-screen pt-24 pb-20">
       {/* Decorative Background */}
@@ -33,11 +51,11 @@ export default function ProductsPage() {
         <section className="relative py-24 lg:py-40">
           <ScrollReveal className="text-center mb-16">
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-background/50 backdrop-blur-sm mb-8">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-muted-foreground tracking-widest">Collections</span>
-
-            </div>
+           
+            <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full border border-primary/10 bg-white/60 backdrop-blur-xl mb-12 shadow-sm hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 hover:scale-105 cursor-default group">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-xs font-semibold text-primary/80 tracking-[0.25em] uppercase group-hover:tracking-[0.35em] transition-all duration-500">Collections</span>
+          </div>
 
             <h1 className="text-4xl md:text-5xl font-light text-foreground mb-4 tracking-tight">
               Our <span className="text-primary font-normal">Collections</span>
@@ -76,8 +94,29 @@ export default function ProductsPage() {
 
           {/* Product Grid */}
           <div className="flex-1">
+            {/* Toolbar */}
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-muted-foreground text-sm">Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredProducts.length)} of {filteredProducts.length} results</p>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Per page:</span>
+                <select
+                  className="bg-transparent border border-input rounded-md text-sm p-1"
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value={12}>12</option>
+                  <option value={24}>24</option>
+                  <option value={48}>48</option>
+                </select>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product, index) => (
+              {currentProducts.map((product, index) => (
                 <ScrollReveal key={product.id} delay={index * 0.1}>
                   <ProductCard product={product} />
                 </ScrollReveal>
@@ -85,18 +124,39 @@ export default function ProductsPage() {
             </div>
 
             {/* Pagination */}
-            <ScrollReveal delay={0.4} className="mt-20 flex justify-center gap-2">
-              {[1, 2, 3].map((page) => (
+            {totalPages > 1 && (
+              <ScrollReveal delay={0.4} className="mt-20 flex justify-center gap-2">
                 <Button
-                  key={page}
-                  variant={page === 1 ? "default" : "outline"}
+                  variant="outline"
                   size="icon"
-                  className="rounded-full w-10 h-10 transition-transform active:scale-95"
+                  className="rounded-full w-10 h-10"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
                 >
-                  {page}
+                  &lt;
                 </Button>
-              ))}
-            </ScrollReveal>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="icon"
+                    className="rounded-full w-10 h-10 transition-transform active:scale-95"
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full w-10 h-10"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  &gt;
+                </Button>
+              </ScrollReveal>
+            )}
           </div>
         </div>
       </div>
